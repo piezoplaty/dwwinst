@@ -2,8 +2,14 @@
     <head>
         <style>
             .inst-readout {
-                color: maroon;
-                font-size: 400px;
+                color: black;
+                font-size: 180px;
+                font-family: "Helvetica";
+                width: 700px;
+                height: 200px;
+            }
+            .inst-title {
+                font-size: 25px;
                 font-family: "Helvetica";
             }
         </style>
@@ -12,13 +18,15 @@
             var runLoop  = setInterval(loadInstrumentData, 1500);
             function loadInstrumentData(){
                 $.getJSON("./data_wind_speed/", function(data) {
-                    $('div.inst-readout').html(data.readout);
+                    $("#top-inst").html(data.readout);
                 });
             };
         </script>
     </head>
     <body>
-        "you got it baby!"
-        <div class='inst-readout'>000</div>
+        <div class='inst-title'>Wind Speed</div>
+        <div id='top-inst' class='inst-readout'>000</div>
+        <div class='inst-title'>Wind Angle</div>
+        <div id='bottom-inst' class='inst-readout'>000</div>
     </body>
 </html>
