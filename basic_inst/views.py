@@ -6,13 +6,13 @@ import random
 
 
 #N2KD_URL = 'http://127.0.0.1:2597/''
-SAMPLE_JSON_FILE = '/Users/nated/projects/dwwinst/json_n2k_tiny'
+SAMPLE_JSON_FILE = '/Users/nated/projects/dwwinst/json_n2k'
 
 #n2kdResponse = urllib.urlopen(N2KD_URL)
 #    data = json.loads(response.read())
 
 
-data = json.loads(open(SAMPLE_JSON_FILE).read())
+#jsonFile = open(SAMPLE_JSON_FILE)
 
 #with open(SAMPLE_JSON_FILE) as json_data:
 #    data = json.load(json_data)
@@ -22,5 +22,20 @@ def index(request):
     return HttpResponse(template.render())
 
 def dataWindSpeed(request):
-    windSpeed = data[2]["fields"]["Wind Speed"]
+    data = getJSONInstrumentReadings(130306)
+    windSpeed = data[random.randint(0,50)]["fields"]["Wind Speed"]
     return JsonResponse({'readout':windSpeed})
+
+
+def getJSONInstrumentReadings(pgn):
+    readings = "["
+    count = 0
+    with open(SAMPLE_JSON_FILE, 'rU') as jsonFile:
+        for line in jsonFile:
+            if str(pgn) in line:
+                if count != 0:
+                    readings += ",\n"
+                readings += line
+                count += 1
+    readings = readings + "]"
+    return json.loads(readings)
