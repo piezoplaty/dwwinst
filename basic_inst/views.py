@@ -22,17 +22,20 @@ def index(request):
     return HttpResponse(template.render())
 
 def dataWindSpeed(request):
-    data = getJSONInstrumentReadings(130306)
+    WIND_SPEED_PGN = 130306
+    data = getJSONInstrumentReadings(WIND_SPEED_PGN)
     windSpeed = data[random.randint(0,50)]["fields"]["Wind Speed"]
     return JsonResponse({'readout':windSpeed})
 
-
+#Canboat analyzer and n2kd return well formed JSON lines that contain all sensor data 
+#jumbled together. This functions extracts sensor specific using the pgn key
+#and adds additional JSON syntax to create a valid JSON map of sensor readings.
 def getJSONInstrumentReadings(pgn):
     readings = "["
     firstRun = True
     with open(SAMPLE_JSON_FILE, 'rU') as jsonFile:
         for line in jsonFile:
-            if str(pgn) in line:
+            if "\"pgn\":" + str(pgn) in line:
                 if firstRun:
                     firstRun = False
                 else:
