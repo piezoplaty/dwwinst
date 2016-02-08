@@ -29,13 +29,14 @@ def dataWindSpeed(request):
 
 def getJSONInstrumentReadings(pgn):
     readings = "["
-    count = 0
+    firstRun = True
     with open(SAMPLE_JSON_FILE, 'rU') as jsonFile:
         for line in jsonFile:
             if str(pgn) in line:
-                if count != 0:
+                if firstRun:
+                    firstRun = False
+                else:
                     readings += ",\n"
                 readings += line
-                count += 1
     readings = readings + "]"
     return json.loads(readings)
