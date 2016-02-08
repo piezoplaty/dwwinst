@@ -1,0 +1,3 @@
+[{"timestamp":"2016-02-08T03:49:53.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":191,"Heading":157.2,"Deviation":0.0,"Reference":"Magnetic"}},
+{"timestamp":"2016-02-08T03:49:53.903Z","prio":2,"src":35,"dst":255,"pgn":127251,"description":"Rate of Turn","fields":{"SID":26,"Rate":0.009700}},
+{"timestamp":"2016-02-08T03:49:53.903Z","prio":2,"src":3,"dst":255,"pgn":130306,"description":"Wind Data","fields":{"SID":18,"Wind Speed":2.72,"Wind Angle":118.6,"Reference":"Apparent"}}]
