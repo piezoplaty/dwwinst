@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <style>
+            .inst-readout {
+                color: maroon;
+                font-size: 400px;
+                font-family: "Helvetica";
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script>
+            var runLoop  = setInterval(loadInstrumentData, 1500);
+            function loadInstrumentData(){
+                $.getJSON("./data_wind_speed/", function(data) {
+                    $('div.inst-readout').html(data.readout);
+                });
+            };
+        </script>
+    </head>
+    <body>
+        "you got it baby!"
+        <div class='inst-readout'>000</div>
+    </body>
+</html>
