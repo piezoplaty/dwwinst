@@ -21,7 +21,7 @@ def index(request):
     template = loader.get_template('basic_inst/index.html')
     return HttpResponse(template.render())
 
-def dataWindSpeed(request):
+def dataWind(request):
     WIND_SPEED_PGN = 130306
     data = getJSONInstrumentReadings(WIND_SPEED_PGN)
     #Hack selector TODO remove
@@ -30,6 +30,11 @@ def dataWindSpeed(request):
     windAngle = data[randIndex]["fields"]["Wind Angle"]
     return JsonResponse({'windSpeed':windSpeed, 'windAngle':windAngle})
 
+def dataBoat(request):
+    BOAT_SPEED_SOW_PGN = 128259
+    sowReadings = getJSONInstrumentReadings(WIND_SPEED_PGN)
+    boatSOW = sowReadings[random.randint(0,50)]["fields"]["Speed Water Referenced"]
+    return JsonResponse({'readout':boatSOW})
 
 #Canboat analyzer and n2kd return well formed JSON lines that contain all sensor data 
 #jumbled together. This functions extracts sensor specific using the pgn key
