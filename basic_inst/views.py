@@ -24,8 +24,12 @@ def index(request):
 def dataWindSpeed(request):
     WIND_SPEED_PGN = 130306
     data = getJSONInstrumentReadings(WIND_SPEED_PGN)
-    windSpeed = data[random.randint(0,50)]["fields"]["Wind Speed"]
-    return JsonResponse({'readout':windSpeed})
+    #Hack selector TODO remove
+    randIndex = random.randint(0,50)
+    windSpeed = data[randIndex]["fields"]["Wind Speed"]
+    windAngle = data[randIndex]["fields"]["Wind Angle"]
+    return JsonResponse({'windSpeed':windSpeed, 'windAngle':windAngle})
+
 
 #Canboat analyzer and n2kd return well formed JSON lines that contain all sensor data 
 #jumbled together. This functions extracts sensor specific using the pgn key

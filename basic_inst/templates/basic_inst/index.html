@@ -18,7 +18,8 @@
             var runLoop  = setInterval(loadInstrumentData, 1500);
             function loadInstrumentData(){
                 $.getJSON("./data_wind_speed/", function(data) {
-                    $("#top-inst").html(data.readout);
+                    $("#top-inst").html(data.windSpeed);
+                    $("#bottom-inst").html(data.windAngle);
                 });
             };
         </script>
