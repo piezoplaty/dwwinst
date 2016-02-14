@@ -35,17 +35,23 @@ def dataBoat(request):
     BOAT_HEADING_PGN = 127250 #fields: Heading
     BOAT_SPEED_COG_SOG_PGN =129026 #COG, SOG
 
+    #Hack - replace with lookup
+    TARGET_BOAT_SPEED = 6.5
+
     #Hack selector TODO remove
-    randIndex = random.randint(0,50)
+    randIndex = random.randint(0,30)
+    #Hack boatSpeed generator TODO remove
+    randSOW = 8 * random.random()
+
     sowReadings = getJSONInstrumentReadings(BOAT_SPEED_SOW_PGN)
     headingReadings = getJSONInstrumentReadings(BOAT_HEADING_PGN)
     cogSogReadings = getJSONInstrumentReadings(BOAT_SPEED_COG_SOG_PGN)
 
-    boatSOW = sowReadings[randIndex]["fields"]["Speed Water Referenced"]
+    boatSOW = randSOW #sowReadings[randIndex]["fields"]["Speed Water Referenced"]
     boatHeading = headingReadings[randIndex]["fields"]["Heading"]
     boatSOG = cogSogReadings[randIndex]["fields"]["SOG"]
     boatCOG = cogSogReadings[randIndex]["fields"]["COG"]
-    return JsonResponse({'boatSOW':boatSOW, 'boatHeading':boatHeading, 'boatSOG':boatSOG, 'boatCOG':boatCOG})
+    return JsonResponse({'boatSOW':boatSOW, 'boatHeading':boatHeading, 'boatSOG':boatSOG, 'boatCOG':boatCOG, 'boatTargetSpeed': TARGET_BOAT_SPEED})
 
 #Canboat analyzer and n2kd return well formed JSON lines that contain all sensor data 
 #jumbled together. This functions extracts sensor specific using the pgn key
