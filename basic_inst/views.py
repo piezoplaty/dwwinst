@@ -24,11 +24,15 @@ def index(request):
 def dataWind(request):
     WIND_SPEED_PGN = 130306
     data = getJSONInstrumentReadings(WIND_SPEED_PGN)
+
+    #Hack remoate
+    TARGET_AWA = 30
     #Hack selector TODO remove
     randIndex = random.randint(0,50)
+
     windSpeed = data[randIndex]["fields"]["Wind Speed"]
     windAngle = data[randIndex]["fields"]["Wind Angle"]
-    return JsonResponse({'windSpeed':windSpeed, 'windAngle':windAngle})
+    return JsonResponse({'windSpeed':windSpeed, 'windAngle':windAngle, 'windTargetAngle': TARGET_AWA})
 
 def dataBoat(request):
     BOAT_SPEED_SOW_PGN = 128259
@@ -41,7 +45,7 @@ def dataBoat(request):
     #Hack selector TODO remove
     randIndex = random.randint(0,30)
     #Hack boatSpeed generator TODO remove
-    randSOW = 8 * random.random()
+    randSOW = 6.0 + random.random()
 
     sowReadings = getJSONInstrumentReadings(BOAT_SPEED_SOW_PGN)
     headingReadings = getJSONInstrumentReadings(BOAT_HEADING_PGN)

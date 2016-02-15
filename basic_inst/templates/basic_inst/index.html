@@ -4,7 +4,7 @@
             .inst-readout-half-width {
                 color: black;
                 font-family: "Helvetica";
-                border-width: 1px;
+                border-width: 5px;
                 border-style: solid;
                 font-size: 180px;
                 width: 359px;
@@ -14,7 +14,7 @@
             }
             .inst-readout-full-width {
                 color: black;
-                border-width: 1px;
+                border-width: 5px;
                 border-style: solid;
                 width: 725px;
                 height: 400px;
@@ -45,8 +45,8 @@
                 border-width: 5px;
                 border-style: solid; 
                 line-height: 110px; 
-                margin-top: 10px;
-                margin-bottom: 10px;
+                margin-top: 7px;
+                margin-bottom: 7px;
                 height: 100px;
                 text-align: center;
             }
@@ -54,7 +54,7 @@
                 font-family: "Helvetica";
                 font-size: 100px;   
                 color: black;
-                border-width: 5px;
+                border-width: 2px;
                 border-style: solid; 
                 line-height: 110px; 
                 margin-top: 10px;
@@ -155,8 +155,9 @@
         <script>
             var runLoop  = setInterval(loadInstrumentData, 1500);
 
-            function setTarget(currentValue, targetValue, instrument) {
-                if (currentValue === targetValue) {
+            function setTarget(currentValue, targetValue, instrument, decimalPrecision) {
+
+                if (currentValue.toFixed(decimalPrecision) === targetValue.toFixed(decimalPrecision)) {
                     $(instrument + " #up-arrow").attr("class","inst-readout-fw-target-up-active");
                     $(instrument + " #down-arrow").attr("class","inst-readout-fw-target-down-active");
                     $(instrument + " #delta-reading").attr("class","inst-readout-fw-target-readout-on-target");
@@ -166,26 +167,26 @@
                     $(instrument + " #up-arrow").attr("class","inst-readout-fw-target-up-inactive");
                     $(instrument + " #down-arrow").attr("class","inst-readout-fw-target-down-active");
                     $(instrument + " #delta-reading").attr("class","inst-readout-fw-target-readout-off-target");
-                    $(instrument + " #delta-reading").html((currentValue - targetValue).toFixed(1));
+                    $(instrument + " #delta-reading").html((currentValue - targetValue).toFixed(decimalPrecision));
                 }
                 else if(currentValue < targetValue) {
                     $(instrument + " #up-arrow").attr("class","inst-readout-fw-target-up-active");
                     $(instrument + " #down-arrow").attr("class","inst-readout-fw-target-down-inactive");
                     $(instrument + " #delta-reading").attr("class","inst-readout-fw-target-readout-off-target");
-                    $(instrument + " #delta-reading").html((currentValue - targetValue).toFixed(1));   
-                }
-
-                
-            }
+                    $(instrument + " #delta-reading").html((currentValue - targetValue).toFixed(decimalPrecision));   
+                }   
+            };
 
             function loadInstrumentData(){
                 $.getJSON("./data_wind/", function(data) {
-                    $("#bottom-inst-readout").html(data.windAngle.toFixed(0));
+                    var windAngleReading = data.windAngle;
+                    $("#bottom-inst-readout").html(windAngleReading.toFixed(0));
+                    setTarget(windAngleReading, data.windTargetAngle, "#bottom-inst", 0);
                 });
                 $.getJSON("./data_boat/", function(data) {
-                    var boatSOW = data.boatSOW;
-                    $("#top-inst-readout").html(boatSOW.toFixed(1));
-                    setTarget(boatSOW, data.boatTargetSpeed, "#top-inst");
+                    var boatSOWReading = data.boatSOW;
+                    $("#top-inst-readout").html(boatSOWReading.toFixed(1));
+                    setTarget(boatSOWReading, data.boatTargetSpeed, "#top-inst", 1);
                     $("#top-left-inst").html(data.boatSOW.toFixed(1));
                     $("#top-right-inst").html(data.boatHeading.toFixed(0));
                     $("#bottom-left-inst").html(data.boatSOG.toFixed(1));
