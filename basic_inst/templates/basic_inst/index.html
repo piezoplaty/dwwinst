@@ -3,14 +3,21 @@
         <style>
             .inst-readout-half-width {
                 color: black;
-                font-family: "Helvetica";
                 border-width: 3px;
                 border-style: solid;
-                font-size: 180px;
                 width: 359px;
                 height: 200px;
-                line-height: 245px;
+                display: inline-block;
+                height: 200px;
+                margin-bottom: 5px;
+
+            }
+            .inst-readout-hw-text{
+                font-family: "Helvetica";
+                font-size: 180px;
+                line-height: 180px;
                 text-align: left;
+                float: left;
             }
             .inst-readout-full-width {
                 color: black;
@@ -18,23 +25,26 @@
                 border-style: solid;
                 width: 725px;
                 height: 400px;
-                line-height: 500px;
+                margin-top: 5px;
+                margin-bottom: 5px;
             }
             .inst-readout-fw-text {
                 font-family: "Helvetica";
-                font-size: 275px;
+                font-size: 260px;
                 float: left;
                 position: relative;
                 text-align: left;
-                height: 400px;
+                height: 260px;
                 width: 500px;
                 left: 10px;
+                top: 95px;
+                line-height: 260px;
             }
             .inst-readout-full-width-target {
                 float: right;
                 position: relative;
                 right: 10px;
-                top: 50px;
+                top: -10px;
                 width: 200px;
                 height: 300px;
             }
@@ -44,7 +54,7 @@
                 color: black;
                 border-width: 5px;
                 border-style: solid; 
-                line-height: 110px; 
+                line-height: 100px; 
                 margin-top: 7px;
                 margin-bottom: 7px;
                 height: 100px;
@@ -56,7 +66,7 @@
                 color: black;
                 border-width: 2px;
                 border-style: solid; 
-                line-height: 110px; 
+                line-height: 100px; 
                 margin-top: 10px;
                 margin-bottom: 10px;
                 height: 100px;
@@ -107,25 +117,18 @@
                 padding-top: 10px;
             }
             .inst-title-full-width {
-                display: float;
+                float: left;
                 position: relative;
                 left: 5px;
-                top: 65px;
                 font-size: 60px;
                 font-family: "Helvetica";
             }
             .inst-title-half-width {
-                display: float;
                 position: relative;
                 left: 5px;
-                top: 35px;
+                top: 1px;
                 font-size: 30px;
                 font-family: "Helvetica";
-            }
-
-            .top-two-inst {
-                display: inline-block;
-                height: 200px;
             }
             .menu {
                 margin-left: 240px;
@@ -223,22 +226,22 @@
             </div>
         </div>
         <div class='four-inst'>
-            <div class='top-two-inst'>
+            <div class='inst-readout-half-width'>
                 <div class='inst-title-half-width'>SOW</div>
-                <div id='top-left-inst' class='inst-readout-half-width'>000</div>               
+                <div id='top-left-inst' class='inst-readout-hw-text'>000</div>               
             </div>
-            <div class='top-two-inst'>
+            <div class='inst-readout-half-width'>
                 <div class='inst-title-half-width'>Heading</div>
-                <div id='top-right-inst' class='inst-readout-half-width'>000</div>               
+                <div id='top-right-inst' class='inst-readout-hw-text'>000</div>               
             </div>
             <div></div>
-            <div class='top-two-inst'>
+            <div class='inst-readout-half-width'>
                 <div class='inst-title-half-width'>SOG</div>
-                <div id='bottom-left-inst' class='inst-readout-half-width'>000</div>               
+                <div id='bottom-left-inst' class='inst-readout-hw-text'>000</div>               
             </div>
-            <div class='top-two-inst'>
+            <div class='inst-readout-half-width'>
                 <div class='inst-title-half-width'>COG</div>
-                <div id='bottom-right-inst' class='inst-readout-half-width'>000</div>               
+                <div id='bottom-right-inst' class='inst-readout-hw-text'>000</div>               
             </div>
         </div>
     </body>
