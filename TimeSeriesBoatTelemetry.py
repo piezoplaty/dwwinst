@@ -17,7 +17,7 @@ class BoatTelemetry:
     def __str__(self):
         return self.Time.isoformat() + ", " + str(self.SOW) + ", " + str(self.Heading) + ", " + str(self.SOG) + ", " + str(self.COG) + ", " + str(self.WindSpeed) + ", " + str(self.WindAngle) + ", " + str(self.Pitch) + ", " + str(self.Roll)
     def __repr__(self):
-        __str__(self)
+        return self.__str__()
 
 class BoatTelemetryMetric:
     def __init__(self, startTime, period):
@@ -149,3 +149,13 @@ class TimeSeriesBoatTelemetry:
         #TODO
         #if self.TSMetrics.exists(lastLogTime):
         return self.convertMetricsToSimpleTelemetry(self.TSMetrics[lastLogTime])
+
+    #Returns a list of BoatTelemtry entries, ordered by time
+    def metricsReadAll(self):
+        keylist = self.TSMetrics.keys()
+        keylist.sort()
+
+        bt = list()
+        for key in keylist:
+            bt.append(self.convertMetricsToSimpleTelemetry(self.TSMetrics[key]))
+        return bt

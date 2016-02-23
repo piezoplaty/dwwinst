@@ -51,6 +51,9 @@ def dataBoat(request):
     boatCOG = metrics.COG
     return JsonResponse({'boatSOW':boatSOW, 'boatHeading':boatHeading, 'boatSOG':boatSOG, 'boatCOG':boatCOG, 'boatTargetSpeed': TARGET_BOAT_SPEED})
 
+def downloadTelemetryHistory(request):
+    return HttpResponse(tsBoatTelem.metricsReadAll())
+
 #Canboat analyzer and n2kd return well formed JSON lines that contain all sensor data 
 #jumbled together. This functions extracts sensor specific using the pgn key
 #and adds additional JSON syntax to create a valid JSON map of sensor readings.

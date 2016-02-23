@@ -111,6 +111,16 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
         tsBoatTelem.printTelemetry()
         self.assertEqual(37, len(tsBoatTelem.TSMetrics))
 
+    def test_loadSampleN2kFileGetAllBoatTelem(self):
+        tsBoatTelem = TimeSeriesBoatTelemetry()
+        with open(SAMPLE_JSON_FILE, 'rU') as n2kFile:
+            for line in n2kFile:
+                tsBoatTelem.processLogLine(line)
+
+        bt = tsBoatTelem.metricsReadAll()
+        self.assertEqual(37, len(bt))
+
+
     def test_metricReadLine(self):
         tsBoatTelem = TimeSeriesBoatTelemetry()
         tsBoatTelem.processLogLine(self.WIND_SPEED_N2K_56_SEC)
@@ -125,6 +135,7 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
         tsBoatTelem.processLogLine(self.WIND_SPEED_N2K_57_SEC)
         self.assertEqual(1.85, tsBoatTelem.metricsReadLast().WindSpeed)
         self.assertEqual(1.85, tsBoatTelem.metricsReadLast().WindSpeed)
+
 
 if __name__ == '__main__':
     unittest.main()
