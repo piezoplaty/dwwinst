@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 import json, urllib
 import random
+from TimeSeriesBoatTelemetry import TimeSeriesBoatTelemetry, BoatTelemetryMetric
 
 
 #N2KD_URL = 'http://127.0.0.1:2597/''
@@ -17,21 +18,26 @@ SAMPLE_JSON_FILE = '/Users/nated/projects/dwwinst/json_n2k'
 #with open(SAMPLE_JSON_FILE) as json_data:
 #    data = json.load(json_data)
 
+#HACK Load data from the file on disk, then serve up the same ol' telemetry
+#to the instruments
+tsBoatTelem = TimeSeriesBoatTelemetry()
+with open(SAMPLE_JSON_FILE, 'rU') as n2kFile:
+    for line in n2kFile:
+        tsBoatTelem.processLogLine(line)
+
+
 def index(request):
     template = loader.get_template('basic_inst/index.html')
     return HttpResponse(template.render())
 
 def dataWind(request):
-    WIND_SPEED_PGN = 130306
-    data = getJSONInstrumentReadings(WIND_SPEED_PGN)
+    metrics = tsBoatTelem.metricsReadLast()
+    windSpeed = metrics.WindSpeed
+    windAngle = metrics.WindAngle
 
-    #Hack remoate
+    #TODO Replace with db lookup for AWA
     TARGET_AWA = 30
-    #Hack selector TODO remove
-    randIndex = random.randint(0,50)
 
-    windSpeed = data[randIndex]["fields"]["Wind Speed"]
-    windAngle = data[randIndex]["fields"]["Wind Angle"]
     return JsonResponse({'windSpeed':windSpeed, 'windAngle':windAngle, 'windTargetAngle': TARGET_AWA})
 
 def dataBoat(request):
