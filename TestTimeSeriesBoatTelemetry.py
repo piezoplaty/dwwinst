@@ -120,7 +120,6 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
         bt = tsBoatTelem.metricsReadAll()
         self.assertEqual(37, len(bt))
 
-
     def test_metricReadLine(self):
         tsBoatTelem = TimeSeriesBoatTelemetry()
         tsBoatTelem.processLogLine(self.WIND_SPEED_N2K_56_SEC)

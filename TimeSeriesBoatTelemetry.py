@@ -66,6 +66,7 @@ class TimeSeriesBoatTelemetry:
         try:
             jsonLogLine = json.loads(strLogLine)
         except:
+            print "Processed and invalid json line"
             return
         
         logLineTime = dateutil.parser.parse(jsonLogLine["timestamp"])
@@ -146,6 +147,7 @@ class TimeSeriesBoatTelemetry:
     #incomplete, as some n2k transducers only emit metrics every second. 
     def metricsReadLast(self):
         lastLogTime = self.roundDownToSecond(self.mostRecentLogTime - datetime.timedelta(seconds=1))
+        print lastLogTime
         #TODO
         #if self.TSMetrics.exists(lastLogTime):
         return self.convertMetricsToSimpleTelemetry(self.TSMetrics[lastLogTime])
