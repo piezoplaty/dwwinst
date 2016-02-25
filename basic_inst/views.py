@@ -20,6 +20,8 @@ def transferJsonStreamToTelemetry():
     N2KD_STREAM_PORT = 2598
     #Buffer recv size
     BUFFER_RECV = 2048
+    #Polling interval
+    POLLING_INTERVAL = .100
 
     #create an INET, STREAMing socket
     s = socket.socket(
@@ -30,8 +32,8 @@ def transferJsonStreamToTelemetry():
 
     stringBuffer = ''
     while True:
-        time.sleep(.100)
-        recvBuffer = s.recv(2048)
+        time.sleep(POLLING_INTERVAL)
+        recvBuffer = s.recv(BUFFER_RECV)
 
         stringBuffer += str(recvBuffer)
         #This seems a bit ditry, how do I know that I'm not going to truncate a n2k message and get a partial line
