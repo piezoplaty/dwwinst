@@ -3,6 +3,7 @@ import datetime
 import dateutil.parser
 from Metric import Metric
 
+#This is a sorta struct that we pass to external callers.
 class BoatTelemetry:
     def __init__(self):
         self.Time = None
@@ -14,8 +15,10 @@ class BoatTelemetry:
         self.WindAngle = None
         self.Pitch = None
         self.Roll = None
+        self.Latitude = None
+        self.Longitude = None
     def __str__(self):
-        return self.Time.isoformat() + ", " + str(self.SOW) + ", " + str(self.Heading) + ", " + str(self.SOG) + ", " + str(self.COG) + ", " + str(self.WindSpeed) + ", " + str(self.WindAngle) + ", " + str(self.Pitch) + ", " + str(self.Roll)
+        return self.Time.isoformat() + ", " + str(self.SOW) + ", " + str(self.Heading) + ", " + str(self.SOG) + ", " + str(self.COG) + ", " + str(self.WindSpeed) + ", " + str(self.WindAngle) + ", " + str(self.Pitch) + ", " + str(self.Roll) + ", " + str(self.Latitude) + ", " + str(self.Longitude)
     def __repr__(self):
         return self.__str__()
 
@@ -31,13 +34,16 @@ class BoatTelemetryMetric:
         self.COGMetric = Metric("COG")
         self.PitchMetric = Metric("Pitch")
         self.RollMetric = Metric("Roll")
+        self.LatitudeMetric = Metric("Latitude")
+        self.LongitudeMetric = Metric("Longitude")
 
 class TimeSeriesBoatTelemetry:
     BOAT_SPEED_SOW_PGN = 128259
     BOAT_HEADING_PGN = 127250 #fields: Heading
     BOAT_SPEED_COG_SOG_PGN = 129026 #COG, SOG
     WIND_SPEED_PGN = 130306
-    BOAT_PITCH_ROLL = 127257
+    BOAT_PITCH_ROLL_PGN = 127257
+    BOAT_LAT_LONG_PGN = 129029
 
     def __init__(self):
         self.TSMetrics = dict()
@@ -84,9 +90,13 @@ class TimeSeriesBoatTelemetry:
         if jsonLogLine["pgn"] == self.BOAT_SPEED_COG_SOG_PGN:
             metrics.SOGMetric.addDataPoint(jsonLogLine["fields"]["SOG"])
             metrics.COGMetric.addDataPoint(jsonLogLine["fields"]["COG"])
-        if jsonLogLine["pgn"] == self.BOAT_PITCH_ROLL:
+        if jsonLogLine["pgn"] == self.BOAT_PITCH_ROLL_PGN:
             metrics.PitchMetric.addDataPoint(jsonLogLine["fields"]["Pitch"])
             metrics.RollMetric.addDataPoint(jsonLogLine["fields"]["Roll"])
+        if jsonLogLine["pgn"] == self.BOAT_LAT_LONG_PGN:
+            metrics.LatitudeMetric.addDataPoint(jsonLogLine["fields"]["Latitude"])
+            metrics.LongitudeMetric.addDataPoint(jsonLogLine["fields"]["Longitude"])
+
 
 
     def convertMetricsToSimpleTelemetry(self, metrics):
@@ -100,6 +110,8 @@ class TimeSeriesBoatTelemetry:
         bt.COG = metrics.COGMetric.Avg
         bt.Pitch = metrics.PitchMetric.Avg
         bt.Roll = metrics.RollMetric.Avg
+        bt.Latitude = metrics.LatitudeMetric.Avg
+        bt.Longitude = metrics.LongitudeMetric.Avg
         return bt
 
     def getCurrentSecond(self):
@@ -135,7 +147,7 @@ class TimeSeriesBoatTelemetry:
 
         keylist = self.TSMetrics.keys()
         keylist.sort()
-
+        #end of the list, start over
         if len(keylist) == self.metricsPosition:
             self.metricsPosition = 0
         

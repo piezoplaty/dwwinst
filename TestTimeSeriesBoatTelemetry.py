@@ -13,6 +13,7 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
     BOAT_HEADING_53_SEC = '{"timestamp":"2016-02-08T03:49:53.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":157.2,"Deviation":0.0,"Reference":"Magnetic"}}'
     BOAT_COG_SOG_53_SEC = '{"timestamp":"2016-02-08T03:49:53.904Z","prio":2,"src":37,"dst":255,"pgn":129026,"description":"COG & SOG, Rapid Update","fields":{"SID":142,"COG Reference":"True","COG":216.9,"SOG":6.47}}'
     BOAT_PITCH_ROLL_53_SEC = '{"timestamp":"2016-02-08T03:49:53.904Z","prio":3,"src":35,"dst":255,"pgn":127257,"description":"Attitude","fields":{"SID":205,"Pitch":0.4,"Roll":0.2}}'
+    BOAT_LAT_LONG_53_SEC = '{"timestamp":"2016-02-08T03:49:53.904Z","prio":3,"src":37,"dst":255,"pgn":129029,"description":"GNSS Position Data","fields":{"SID":143,"Date":"2016.02.08", "Time": "03:49:41","Latitude":47.6478166,"Longitude":-122.3449133,"GNSS type":"GPS+SBAS/WAAS","Method":"DGNSS fix","Integrity":"No integrity checking","Number of SVs":10,"HDOP":0.90,"PDOP":1.70,"Geoidal Separation":-0.01,"Reference Station ID":7}}'
 
     def test_getCurrentSecondWithNoTelemetry(self):
         tsBoatTelem = TimeSeriesBoatTelemetry()
@@ -26,6 +27,13 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
         tsBoatTelem = TimeSeriesBoatTelemetry()
         tsBoatTelem.processLogLine(self.WIND_SPEED_N2K_56_SEC)
         self.assertEqual(1.85, tsBoatTelem.getCurrentSecond().WindSpeed)
+
+    def test_setGetLatLong(self):
+        tsBoatTelem = TimeSeriesBoatTelemetry()
+        tsBoatTelem.processLogLine(self.BOAT_LAT_LONG_53_SEC)
+        self.assertEqual(47.65, tsBoatTelem.getCurrentSecond().Latitude)
+        self.assertEqual(-122.34, tsBoatTelem.getCurrentSecond().Longitude)
+
 
     def test_setMultipleWindSpeeds(self):
         tsBoatTelem = TimeSeriesBoatTelemetry()
@@ -118,7 +126,7 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
                 tsBoatTelem.processLogLine(line)
 
         bt = tsBoatTelem.metricsReadAll()
-        self.assertEqual(37, len(bt))
+        self.assertEqual(39, len(bt))
 
     def test_metricReadLine(self):
         tsBoatTelem = TimeSeriesBoatTelemetry()
