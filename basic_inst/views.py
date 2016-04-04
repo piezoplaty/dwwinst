@@ -60,6 +60,10 @@ def index(request):
     template = loader.get_template('basic_inst/index.html')
     return HttpResponse(template.render())
 
+def single_inst(request):
+    template = loader.get_template('basic_inst/single_inst.html')
+    return HttpResponse(template.render())
+
 def dataWind(request):
     metrics = tsBoatTelem.metricsReadLast()
     windSpeed = metrics.WindSpeed
