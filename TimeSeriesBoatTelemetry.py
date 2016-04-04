@@ -72,7 +72,7 @@ class TimeSeriesBoatTelemetry:
         try:
             jsonLogLine = json.loads(strLogLine)
         except:
-            print "Processed and invalid json line"
+            print("Processed and invalid json line")
             return
         
         logLineTime = dateutil.parser.parse(jsonLogLine["timestamp"])
@@ -131,10 +131,10 @@ class TimeSeriesBoatTelemetry:
         return bt
 
     def printTelemetry(self):
-        keylist = self.TSMetrics.keys()
-        keylist.sort()
+        keylist = sorted(self.TSMetrics.keys())
+
         for key in keylist:
-            print self.convertMetricsToSimpleTelemetry(self.TSMetrics[key])
+            print(self.convertMetricsToSimpleTelemetry(self.TSMetrics[key]))
 
     #iterates through metrics in time sorted order (by key)
     #returns None at the end of the metrics
@@ -145,8 +145,8 @@ class TimeSeriesBoatTelemetry:
         else:
             self.metricsPosition += 1
 
-        keylist = self.TSMetrics.keys()
-        keylist.sort()
+        keylist = sorted(self.TSMetrics.keys())
+        
         #end of the list, start over
         if len(keylist) == self.metricsPosition:
             self.metricsPosition = 0
@@ -159,15 +159,14 @@ class TimeSeriesBoatTelemetry:
     #incomplete, as some n2k transducers only emit metrics every second. 
     def metricsReadLast(self):
         lastLogTime = self.roundDownToSecond(self.mostRecentLogTime - datetime.timedelta(seconds=1))
-        print lastLogTime
+        print(lastLogTime)
         #TODO
         #if self.TSMetrics.exists(lastLogTime):
         return self.convertMetricsToSimpleTelemetry(self.TSMetrics[lastLogTime])
 
     #Returns a list of BoatTelemtry entries, ordered by time
     def metricsReadAll(self):
-        keylist = self.TSMetrics.keys()
-        keylist.sort()
+        keylist = sorted(self.TSMetrics.keys())
 
         bt = list()
         for key in keylist:
