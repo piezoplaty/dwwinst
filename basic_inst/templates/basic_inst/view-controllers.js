@@ -1,16 +1,33 @@
 //View controllers for HTML instrument pages
 
 
-function instrumentController(instReadoutDiv, targetReadoutDiv) {
+function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv) {
     var METRICS_DATA_URL = "./data_all/";
     var _instReadoutDiv = instReadoutDiv;
+    var _instNameDiv = instNameDiv;
     var _targetReadoutDiv = targetReadoutDiv;
     var _selectedMetricKey = "SOG";
-    this.currentMetricData = "";
+    var _currentMetricData = "";
+
+
+    function getSelectedMetric() {
+        for(var i=0; i<_currentMetricData.length; i++){
+            if (_currentMetricData[i].keyName == _selectedMetricKey){
+                return _currentMetricData[i];
+            }
+        }
+    }
+
     this.updateMetricData = function(metricData) {
-        this.currentMetricData = metricData; //metricData;
-        _instReadoutDiv.innerHTML = "6.5";
+        _currentMetricData = metricData; //metricData;
+        var selectedMetric = getSelectedMetric();
+        _instReadoutDiv.innerHTML = selectedMetric.value;
+        _instNameDiv.innerHTML = selectedMetric.displayName;
     };
+
+    this.selectMetric = function(keyName) {
+        _selectedMetricKey = keyName;
+    }
 
     //this.updateViews() {
         

@@ -5,42 +5,63 @@ QUnit.test( "hello test", function( assert ) {
 */
 
 var metricData1 =   [
-                        "SOG": {
-                            "displayName":"SOG",
+                        {
+                            "keyName" : "SOG",
+                            "displayName" : "SOG",
                             "value": 6.5,
-                            "targetValue":6.4
+                            "targetValue" : 6.4
                         },
-                        "COG" : {
-                            "displayName":"COG",
-                            "value": 135.8,
-                            "targetValue":"None"
+                        {
+                            "keynName" : "COG",
+                            "displayName" : "COG",
+                            "value" : 135.8,
+                            "targetValue" : "None"
                         }
                     ];
 
 
 var metricData2 =   [
                         {
-                            "displayName":"SOG",
-                            "keyName":"SOG",
-                            "value": 6.8,
-                            "targetValue":6.4
+                            "displayName" : "SOG",
+                            "keyName" : "SOG",
+                            "value" : 6.8,
+                            "targetValue" : 6.4
                         },
                         {
-                            "displayName":"SOG",
-                            "keyName":"COG",
-                            "value": 141.3,
-                            "targetValue":"None"
+                            "displayName" : "COG",
+                            "keyName" : "COG",
+                            "value" : 141.3,
+                            "targetValue" : "None"
                         }
                     ];
 
 
-QUnit.test( "hello test", function( assert ) {
+
+QUnit.test( "Controller Metric Referesh", function( assert ) {
     var readoutDiv = document.createElement("div");
     var targetReadoutDiv = null;
-    var controller = new instrumentController(readoutDiv, targetReadoutDiv);  
+    var instNameDiv = document.createElement("div");
+    var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv);  
     controller.updateMetricData(metricData1);
-    assert.ok("SOG" === controller.currentMet ricData[0].keyName, "Update metric data.");
-    assert.ok("6.5" === readoutDiv.textContent, "Check that instrument value is set to match metricData1")
+    controller.selectMetric("SOG");
+
+    assert.ok("6.5" === readoutDiv.textContent, "Check that instrument value is set to match metricData1");
     controller.updateMetricData(metricData2);
-    assert.ok("6.5" === readoutDiv.textContent, "After metric update, check that instrument value matches metricData2.")
+    assert.ok("6.8" === readoutDiv.textContent, "After metric update, check that instrument value matches metricData2.")
 });
+
+QUnit.test( "Select a new metric", function( assert ) {
+    var readoutDiv = document.createElement("div");
+    var instNameDiv = document.createElement("div");
+    var targetReadoutDiv = null;
+    var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv);  
+    controller.updateMetricData(metricData1);
+    controller.selectMetric("SOG");
+    assert.ok("6.5" === readoutDiv.textContent, "Check that instrument value is set to match selected metric");
+    assert.ok("SOG" === instNameDiv.textContent, "Check that instrument name is set to match selected metric");
+});
+
+
+//TODO - Error Handling and NULLs
+//Change div instrument name when metric name changes
+//Togle display of target metric
