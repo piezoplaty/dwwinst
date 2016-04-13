@@ -64,6 +64,10 @@ def single_inst(request):
     template = loader.get_template('basic_inst/single_inst.html')
     return HttpResponse(template.render())
 
+def view_controllers(request):
+    template = loader.get_template('basic_inst/view-controllers.js')
+    return HttpResponse(template.render())
+
 def dataWind(request):
     metrics = tsBoatTelem.metricsReadLast()
     windSpeed = metrics.WindSpeed
@@ -84,6 +88,9 @@ def dataBoat(request):
     boatSOG = metrics.SOG
     boatCOG = metrics.COG
     return JsonResponse({'boatSOW':boatSOW, 'boatHeading':boatHeading, 'boatSOG':boatSOG, 'boatCOG':boatCOG, 'boatTargetSpeed': TARGET_BOAT_SPEED})
+
+def dataAll(request):
+    return JsonResponse([{"keyName" : "SOG","displayName" : "SOG","value": 6.5,"targetValue" : 6.4},{"keyName" : "COG","displayName" : "COG","value" : 135.8,"targetValue" : "None"}], safe=False)    
 
 def downloadTelemetryHistory(request):
     responseBody = ''

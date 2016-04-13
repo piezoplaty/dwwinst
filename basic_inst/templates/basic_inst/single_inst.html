@@ -13,13 +13,12 @@
             .inst-readout-text {
                 font-family: "Helvetica";
                 font-size: 260px;
-                float: left;
                 position: relative;
                 text-align: left;
                 height: 260px;
                 width: 500px;
                 left: 10px;
-                top: 95px;
+                top: 70px;
                 line-height: 260px;
             }
             .inst-readout-title {
@@ -31,30 +30,87 @@
             }
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script src="./view_controllers"></script>
         <script>
+            //Hacked to work around the DOM load delays. Got a chicken and egg
+            
+
+
+            var singleInstController = null;
             var runLoop  = setInterval(loadInstrumentData, 1500);
+
+            function initializeController(){
+
+                var instTitle = document.getElementById("inst-title");
+                var instReadout = document.getElementById("inst-text");
+                var instTargetReadout = document.createElement("div");
+
+                singleInstController = new instrumentController(instTitle, instReadout, instTargetReadout);
+                singleInstController.selectMetric("SOG");
+
+            }
 
 
             function loadInstrumentData(){
-                $.getJSON("./data_wind/", function(data) {
-                    var windAngleReading = data.windAngle;
-                    $("#bottom-inst-readout").html(windAngleReading.toFixed(0));
-                    setTarget(windAngleReading, data.windTargetAngle, "#bottom-inst", 0);
+                $.getJSON("./data_all/", function(data) {
+                    if (singleInstController == null)
+                        initializeController();
+                    singleInstController.updateMetricData(data);
                 });
-                $.getJSON("./data_boat/", function(data) {
-                    var boatSOWReading = data.boatSOW;
-                    $("#top-inst-readout").html(boatSOWReading.toFixed(1));
-                });
+
             };
+
+
+
+            /*
+            
+            data[1].
+
+            [
+                {
+                    "displayName":"SOG",
+                    "keyName":"SOG",
+                    "value": 6.5,
+                    "targetValue":6.4
+                },
+                {
+                    "displayName":"SOG",
+                    "keyName":"COG",
+                    "value": 135.8,
+                    "targetValue":"None"
+                }
+            ]
+
+            populateSelectorMenu
+                get the data list from the controller
+                for each item in data
+                    addDataItemToSelector
+                        selectorName = item.displayName
+                        selectorDataKey = item.keyName
+
+
+            onclickInstTitle
+                
+                setInstMenuToVisible
+
+            onclickMenuItem
+                setcurrentDataItem(selected)
+
+            setCurrentDataItem(key)
+                setInstViewControllerKey to key
+
+            */
 
         </script>
     </head>
     <body>
         <div>
-
             <div id='top-inst' class='inst-readout'>
-                <div class='inst-readout-title'>Boat Speed</div>
-                <div id='top-inst-readout' class='inst-readout-text'>180</div>
+                <div id='inst-title' class='inst-readout-title'>Boat Speed</div>
+                <div id='inst-text' class='inst-readout-text'>180</div>
+            </div>
+            <div id='inst_menu'>
+                <a>BoatSpeed</a>
             </div>
         </div>
     </body>

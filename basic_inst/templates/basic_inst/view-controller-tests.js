@@ -12,7 +12,7 @@ var metricData1 =   [
                             "targetValue" : 6.4
                         },
                         {
-                            "keynName" : "COG",
+                            "keyName" : "COG",
                             "displayName" : "COG",
                             "value" : 135.8,
                             "targetValue" : "None"
@@ -39,7 +39,7 @@ var metricData2 =   [
 
 QUnit.test( "Controller Metric Referesh", function( assert ) {
     var readoutDiv = document.createElement("div");
-    var targetReadoutDiv = null;
+    var targetReadoutDiv = document.createElement("div");
     var instNameDiv = document.createElement("div");
     var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv);  
     controller.updateMetricData(metricData1);
@@ -53,7 +53,7 @@ QUnit.test( "Controller Metric Referesh", function( assert ) {
 QUnit.test( "Select a new metric", function( assert ) {
     var readoutDiv = document.createElement("div");
     var instNameDiv = document.createElement("div");
-    var targetReadoutDiv = null;
+    var targetReadoutDiv = document.createElement("div");
     var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv);  
     controller.updateMetricData(metricData1);
     controller.selectMetric("SOG");
@@ -61,7 +61,25 @@ QUnit.test( "Select a new metric", function( assert ) {
     assert.ok("SOG" === instNameDiv.textContent, "Check that instrument name is set to match selected metric");
 });
 
+QUnit.test( "Initialize controller with null divs", function( assert ) {
+    var assertMessage = "Expect an exception for invalid constructor arguments.";
+
+    var controller = null;
+    try{
+        controller = new instrumentController(null, null, null);
+        assert.ok(false, "Expected an exception, but it didn't occure");      
+    }
+    catch(e){
+        assert.ok(e == "You must initialize the controller with valid dom element objects", assertMessage);
+    }
+
+});
+
+
 
 //TODO - Error Handling and NULLs
+    //handled Null on constructor
+    //Select a metric that doesn't exist in the data field
+    //Set an update for data af
 //Change div instrument name when metric name changes
-//Togle display of target metric
+//Toggle display of target metric
