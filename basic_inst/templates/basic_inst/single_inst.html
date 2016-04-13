@@ -12,17 +12,20 @@
             }
             .inst-readout-text {
                 font-family: "Helvetica";
-                font-size: 260px;
+                font-size: 230px;
                 position: relative;
+                float: left;
                 text-align: left;
                 height: 260px;
                 width: 500px;
                 left: 10px;
                 top: 70px;
                 line-height: 260px;
+                white-space: nowrap;
             }
             .inst-readout-title {
                 float: left;
+                width: 724px;
                 position: relative;
                 left: 5px;
                 font-size: 60px;
@@ -46,7 +49,7 @@
                 var instTargetReadout = document.createElement("div");
 
                 singleInstController = new instrumentController(instTitle, instReadout, instTargetReadout);
-                singleInstController.selectMetric("SOG");
+                singleInstController.selectMetric("COG");
 
             }
 
