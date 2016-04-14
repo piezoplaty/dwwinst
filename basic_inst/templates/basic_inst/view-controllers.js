@@ -24,7 +24,7 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
 
 
     var myThis = this; // preserve context within object methods.
-    var METRICS_DATA_URL = "./data_all/";
+    var INST_DECIMAL_PRECISION = 1;
     var _instReadoutDiv = instReadoutDiv;
     var _instNameDiv = instNameDiv;
     var _menuDiv = menuDiv;
@@ -51,7 +51,7 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
         var selectedMetric = getSelectedMetric();
         if(_instReadoutDiv.firstChild)
             _instReadoutDiv.removeChild(_instReadoutDiv.firstChild);
-        _instReadoutDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.value));
+        _instReadoutDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.value.toFixed(INST_DECIMAL_PRECISION)));
 
         if(_instNameDiv.firstChild)
             _instNameDiv.removeChild(_instNameDiv.firstChild);
