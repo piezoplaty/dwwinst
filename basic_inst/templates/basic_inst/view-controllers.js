@@ -47,10 +47,23 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
         }
     }
 
+    function refreshInstrument(){
+        var selectedMetric = getSelectedMetric();
+        if(_instReadoutDiv.firstChild)
+            _instReadoutDiv.removeChild(_instReadoutDiv.firstChild);
+        _instReadoutDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.value));
+
+        if(_instNameDiv.firstChild)
+            _instNameDiv.removeChild(_instNameDiv.firstChild);
+        _instNameDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.displayName)); 
+    }
+
    this.selectMetric = function (keyName) {
         _selectedMetricKey = keyName;
         //let's also hide the menu, since we've selected an item
         hideElement(_menuDiv);
+        if(_currentMetricData != "")
+            refreshInstrument();
     }
 
     function populateMenu(){
@@ -81,15 +94,8 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
 
     this.updateMetricData = function(metricData) {
         _currentMetricData = metricData; //metricData;
-        var selectedMetric = getSelectedMetric();
-            if(_instReadoutDiv.firstChild)
-                _instReadoutDiv.removeChild(_instReadoutDiv.firstChild);
-            _instReadoutDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.value));
-
-            if(_instNameDiv.firstChild)
-                _instNameDiv.removeChild(_instNameDiv.firstChild);
-            _instNameDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.displayName));
-            populateMenu();
+        refreshInstrument();
+        populateMenu();
     };
 
 
