@@ -41,7 +41,8 @@ QUnit.test( "Controller Metric Referesh", function( assert ) {
     var readoutDiv = document.createElement("div");
     var targetReadoutDiv = document.createElement("div");
     var instNameDiv = document.createElement("div");
-    var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv);  
+    var menuDiv = document.createElement("div");
+    var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv, menuDiv);  
     controller.updateMetricData(metricData1);
     controller.selectMetric("SOG");
 
@@ -54,7 +55,8 @@ QUnit.test( "Select a new metric", function( assert ) {
     var readoutDiv = document.createElement("div");
     var instNameDiv = document.createElement("div");
     var targetReadoutDiv = document.createElement("div");
-    var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv);  
+    var menuDiv = document.createElement("div");
+    var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv, menuDiv);  
     controller.updateMetricData(metricData1);
     controller.selectMetric("SOG");
     assert.ok("6.5" === readoutDiv.textContent, "Check that instrument value is set to match selected metric");
@@ -73,6 +75,16 @@ QUnit.test( "Initialize controller with null divs", function( assert ) {
         assert.ok(e == "You must initialize the controller with valid dom element objects", assertMessage);
     }
 
+});
+
+QUnit.test( "Populate menu div", function( assert ) {
+    var readoutDiv = document.createElement("div");
+    var instNameDiv = document.createElement("div");
+    var targetReadoutDiv = document.createElement("div");
+    var menuDiv = document.createElement("div");
+    var controller = new instrumentController(instNameDiv, readoutDiv, targetReadoutDiv, menuDiv);  
+    controller.updateMetricData(metricData1);
+    assert.ok(2 === menuDiv.children.length, "There should be two a elements in the menu.");
 });
 
 

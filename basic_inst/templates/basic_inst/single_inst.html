@@ -47,9 +47,11 @@
                 var instTitle = document.getElementById("inst-title");
                 var instReadout = document.getElementById("inst-text");
                 var instTargetReadout = document.createElement("div");
+                var instMenu = document.getElementById("inst_menu");
 
-                singleInstController = new instrumentController(instTitle, instReadout, instTargetReadout);
-                singleInstController.selectMetric("COG");
+
+                singleInstController = new instrumentController(instTitle, instReadout, instTargetReadout, instMenu);
+                singleInstController.selectMetric("SOG");
 
             }
 
@@ -109,8 +111,8 @@
     <body>
         <div>
             <div id='top-inst' class='inst-readout'>
-                <div id='inst-title' class='inst-readout-title'>Boat Speed</div>
-                <div id='inst-text' class='inst-readout-text'>180</div>
+                <div id='inst-title' class='inst-readout-title'>-</div>
+                <div id='inst-text' class='inst-readout-text'>-</div>
             </div>
             <div id='inst_menu'>
                 <a>BoatSpeed</a>

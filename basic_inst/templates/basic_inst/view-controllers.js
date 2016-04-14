@@ -6,18 +6,37 @@ function isDomElement(obj){
     return true;
 };
 
+function hideElement(el){
+    el.style.display = 'none';  
+    
+}
 
-function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv) {
-    if(!isDomElement(instNameDiv) || !isDomElement(instReadoutDiv) || !isDomElement(targetReadoutDiv))
+function unhideElement(el){
+    el.style.display = 'inline'; 
+}
+
+
+function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, menuDiv) {
+    if(!isDomElement(instNameDiv) || !isDomElement(instReadoutDiv) || !isDomElement(targetReadoutDiv) || !isDomElement(menuDiv))
         throw "You must initialize the controller with valid dom element objects";
 
+    
 
+
+    var myThis = this; // preserve context within object methods.
     var METRICS_DATA_URL = "./data_all/";
     var _instReadoutDiv = instReadoutDiv;
     var _instNameDiv = instNameDiv;
+    var _menuDiv = menuDiv;
     var _targetReadoutDiv = targetReadoutDiv;
     var _selectedMetricKey = "SOG";
     var _currentMetricData = "";
+
+    //jam the proper menu div into the instNameDiv
+    _instNameDiv.menuDiv = _menuDiv;
+    var instNamceOnclick = "unhideElement(this.menuDiv);";
+    _instNameDiv.setAttribute('onclick', instNamceOnclick);
+
 
 
     function getSelectedMetric() {
@@ -28,25 +47,52 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv) {
         }
     }
 
+   this.selectMetric = function (keyName) {
+        _selectedMetricKey = keyName;
+        //let's also hide the menu, since we've selected an item
+        hideElement(_menuDiv);
+    }
+
+    function populateMenu(){
+        while (_menuDiv.firstChild) {
+            _menuDiv.removeChild(_menuDiv.firstChild);
+        }
+        for(var i=0; i<_currentMetricData.length; i++){
+            var selectMetricLink = document.createElement("a");
+            var link = document.createTextNode(_currentMetricData[i].displayName);
+            selectMetricLink.appendChild(link);
+            //OMG is this actually going to work?? This is quite a hack a doodle doo.
+            //Let's jam the point to the this instance method, and a reference to the 
+            //keyname associated with this metric. When onclick is call 'this' should 
+            //reference the link element, and should be able to reference this 
+            //jammed in members.
+            selectMetricLink.keyName = _currentMetricData[i].keyName;
+            selectMetricLink.selectMetricPtr = myThis.selectMetric;
+            var onclickFunction = "this.selectMetricPtr(this.keyName);";
+            //var onclickFunction = "debugMe(this);";
+            selectMetricLink.setAttribute('onclick', onclickFunction);
+            _menuDiv.appendChild(selectMetricLink);
+
+        }
+    }
+
     this.updateMetricData = function(metricData) {
         _currentMetricData = metricData; //metricData;
         var selectedMetric = getSelectedMetric();
             if(_instReadoutDiv.firstChild)
-                _instReadoutDiv.firstChild.nodeValue = selectedMetric.value;
-            else
-                _instReadoutDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.value));
+                _instReadoutDiv.removeChild(_instReadoutDiv.firstChild);
+            _instReadoutDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.value));
 
-        _instNameDiv.innerText = selectedMetric.displayName;
+            if(_instNameDiv.firstChild)
+                _instNameDiv.removeChild(_instNameDiv.firstChild);
+            _instNameDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.displayName));
+            populateMenu();
     };
-
-    this.selectMetric = function(keyName) {
-        _selectedMetricKey = keyName;
-    }
 
 
     this.displayMetricMenu = function(){
-
-
+        //unhid the menu when the _instNameDiv is clicked
+        unhideElement(_menuDiv);
     }
     //this.updateViews() {
         
