@@ -58,9 +58,12 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
             _menuDiv.removeChild(_menuDiv.firstChild);
         }
         for(var i=0; i<_currentMetricData.length; i++){
+
+            var selectedMetricLinkDiv = document.createElement("div");
             var selectMetricLink = document.createElement("a");
             var link = document.createTextNode(_currentMetricData[i].displayName);
             selectMetricLink.appendChild(link);
+            selectedMetricLinkDiv.appendChild(selectMetricLink);
             //OMG is this actually going to work?? This is quite a hack a doodle doo.
             //Let's jam the point to the this instance method, and a reference to the 
             //keyname associated with this metric. When onclick is call 'this' should 
@@ -71,7 +74,7 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
             var onclickFunction = "this.selectMetricPtr(this.keyName);";
             //var onclickFunction = "debugMe(this);";
             selectMetricLink.setAttribute('onclick', onclickFunction);
-            _menuDiv.appendChild(selectMetricLink);
+            _menuDiv.appendChild(selectedMetricLinkDiv);
 
         }
     }
