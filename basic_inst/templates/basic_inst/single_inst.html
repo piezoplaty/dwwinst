@@ -31,6 +31,19 @@
                 font-size: 60px;
                 font-family: "Helvetica";
             }
+            .inst-menu {
+                float: left;
+                position: absolute;
+                z-index: 10;
+                display: none;
+                font-size: 38px;
+                font-family: helvetica;
+                background-color: white;
+                border: 4px;
+                width: 230px;
+                left: 43px;
+                top: 80px;
+            }
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script src="./view_controllers"></script>
@@ -111,11 +124,9 @@
     <body>
         <div>
             <div id='top-inst' class='inst-readout'>
+                <div id='inst_menu' class="inst-menu"></div>
                 <div id='inst-title' class='inst-readout-title'>-</div>
                 <div id='inst-text' class='inst-readout-text'>-</div>
-            </div>
-            <div id='inst_menu'>
-                <a>BoatSpeed</a>
             </div>
         </div>
     </body>
