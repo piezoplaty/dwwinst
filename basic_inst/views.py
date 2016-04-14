@@ -90,7 +90,19 @@ def dataBoat(request):
     return JsonResponse({'boatSOW':boatSOW, 'boatHeading':boatHeading, 'boatSOG':boatSOG, 'boatCOG':boatCOG, 'boatTargetSpeed': TARGET_BOAT_SPEED})
 
 def dataAll(request):
-    return JsonResponse([{"keyName" : "SOG","displayName" : "SOG","value": 6.5,"targetValue" : 6.4},{"keyName" : "COG","displayName" : "COG","value" : 135.8,"targetValue" : "None"}], safe=False)    
+    metrics = tsBoatTelem.metricsGetLastMetrics()
+    jsonMetrics = []
+
+    jsonMetrics.append({"keyName" : "SOW", "displayName" : "SOW", "value" : metrics.SOWMetric.Avg, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "Windspeed", "displayName" : "Wind Speed", "value" : metrics.WindSpeedMetric.Avg, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "Windangle", "displayName" : "Wind Angle", "value" : metrics.WindAngleMetric.Avg, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "Heading", "displayName" : "Heading", "value" : metrics.HeadingMetric.Avg, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "SOG", "displayName" : "SOG", "value" : metrics.SOGMetric.Avg, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "Roll", "displayName" : "Roll", "value" : metrics.RollMetric.Avg, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "Pitch", "displayName" : "Pitch", "value" : metrics.PitchMetric.Avg, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "LatLong", "displayName" : "Lat Long", "value" : str(metrics.LatitudeMetric.Avg) + ", \n" + str(metrics.LongitudeMetric.Avg), "targetValue" : None})
+
+    return JsonResponse(jsonMetrics, safe=False)    
 
 def downloadTelemetryHistory(request):
     responseBody = ''

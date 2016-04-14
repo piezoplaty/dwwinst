@@ -77,6 +77,7 @@ class TimeSeriesBoatTelemetry:
         
         logLineTime = dateutil.parser.parse(jsonLogLine["timestamp"])
         logLineTime = self.roundDownToSecond(logLineTime)
+        print ("Processing log line for " + str(logLineTime))
         self.setMostRecentLogTime(logLineTime)
         metrics = self.getMetricEntry(logLineTime)
         
@@ -159,10 +160,13 @@ class TimeSeriesBoatTelemetry:
     #incomplete, as some n2k transducers only emit metrics every second. 
     def metricsReadLast(self):
         lastLogTime = self.roundDownToSecond(self.mostRecentLogTime - datetime.timedelta(seconds=1))
-        print(lastLogTime)
         #TODO
         #if self.TSMetrics.exists(lastLogTime):
         return self.convertMetricsToSimpleTelemetry(self.TSMetrics[lastLogTime])
+
+    def metricsGetLastMetrics(self):
+        lastLogTime = self.roundDownToSecond(self.mostRecentLogTime - datetime.timedelta(seconds=1))
+        return self.TSMetrics[lastLogTime]
 
     #Returns a list of BoatTelemtry entries, ordered by time
     def metricsReadAll(self):
