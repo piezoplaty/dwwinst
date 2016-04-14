@@ -52,28 +52,34 @@
             
 
 
-            var singleInstController = null;
+            var topInstController = null;
+            var bottomInstController = null;
             var runLoop  = setInterval(loadInstrumentData, 1500);
 
             function initializeController(){
 
-                var instTitle = document.getElementById("inst-title");
-                var instReadout = document.getElementById("inst-text");
-                var instTargetReadout = document.createElement("div");
-                var instMenu = document.getElementById("inst_menu");
-
-
-                singleInstController = new instrumentController(instTitle, instReadout, instTargetReadout, instMenu);
-                singleInstController.selectMetric("SOG");
+                topInstController = new instrumentController(
+                        document.getElementById("inst-title"), 
+                        document.getElementById("inst-text"), 
+                        document.createElement("div"), 
+                        document.getElementById("inst_menu"));
+                bottomInstController = new instrumentController(
+                        document.getElementById("inst-title2"), 
+                        document.getElementById("inst-text2"), 
+                        document.createElement("div"), 
+                        document.getElementById("inst_menu2"));
+                topInstController.selectMetric("SOW");
+                bottomInstController.selectMetric("SOW");
 
             }
 
 
             function loadInstrumentData(){
                 $.getJSON("./data_all/", function(data) {
-                    if (singleInstController == null)
+                    if (topInstController == null || bottomInstController == null)
                         initializeController();
-                    singleInstController.updateMetricData(data);
+                    topInstController.updateMetricData(data);
+                    bottomInstController.updateMetricData(data);
                 });
 
             };
@@ -122,12 +128,15 @@
         </script>
     </head>
     <body>
-        <div>
-            <div id='top-inst' class='inst-readout'>
-                <div id='inst_menu' class="inst-menu"></div>
-                <div id='inst-title' class='inst-readout-title'>-</div>
-                <div id='inst-text' class='inst-readout-text'>-</div>
-            </div>
+        <div id='top-inst' class='inst-readout'>
+            <div id='inst_menu' class="inst-menu"></div>
+            <div id='inst-title' class='inst-readout-title'>-</div>
+            <div id='inst-text' class='inst-readout-text'>-</div>
+        </div>
+        <div id='top-inst2' class='inst-readout'>
+            <div id='inst_menu2' class="inst-menu"></div>
+            <div id='inst-title2' class='inst-readout-title'>-</div>
+            <div id='inst-text2' class='inst-readout-text'>-</div>
         </div>
     </body>
 </html>
