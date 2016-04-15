@@ -49,6 +49,9 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
 
     function refreshInstrument(){
         var selectedMetric = getSelectedMetric();
+        if (selectedMetric.value == null)
+            return;
+
         if(_instReadoutDiv.firstChild)
             _instReadoutDiv.removeChild(_instReadoutDiv.firstChild);
         _instReadoutDiv.appendChild(_instReadoutDiv.ownerDocument.createTextNode(selectedMetric.value.toFixed(INST_DECIMAL_PRECISION)));
