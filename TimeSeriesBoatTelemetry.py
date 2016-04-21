@@ -1,5 +1,6 @@
 import json
 import datetime
+import math
 import dateutil.parser
 from Metric import Metric
 
@@ -17,8 +18,10 @@ class BoatTelemetry:
         self.Roll = None
         self.Latitude = None
         self.Longitude = None
+        self.WaterCurrentSpeed = None
+        self.WaterCurrentAngle = None
     def __str__(self):
-        return self.Time.isoformat() + ", " + str(self.SOW) + ", " + str(self.Heading) + ", " + str(self.SOG) + ", " + str(self.COG) + ", " + str(self.WindSpeed) + ", " + str(self.WindAngle) + ", " + str(self.Pitch) + ", " + str(self.Roll) + ", " + str(self.Latitude) + ", " + str(self.Longitude)
+        return self.Time.isoformat() + ", " + str(self.SOW) + ", " + str(self.Heading) + ", " + str(self.SOG) + ", " + str(self.COG) + ", " + str(self.WaterCurrentAngle) + ", " + str(self.WaterCurrentSpeed) + str(self.WindSpeed) + ", " + str(self.WindAngle) + ", " + str(self.Pitch) + ", " + str(self.Roll) + ", " + str(self.Latitude) + ", " + str(self.Longitude)
     def __repr__(self):
         return self.__str__()
 
@@ -36,6 +39,8 @@ class BoatTelemetryMetric:
         self.RollMetric = Metric("Roll")
         self.LatitudeMetric = Metric("Latitude")
         self.LongitudeMetric = Metric("Longitude")
+        self.WaterCurrentSpeed = Metric("Water Current Speed")
+        self.WaterCurrentAngle = Metric("Water Current Angle")
 
 class TimeSeriesBoatTelemetry:
     BOAT_SPEED_SOW_PGN = 128259
@@ -66,6 +71,49 @@ class TimeSeriesBoatTelemetry:
             self.TSMetrics[key] = BoatTelemetryMetric(key, datetime.timedelta(seconds =1))
             return self.TSMetrics[key]
 
+    def isSogPortOfHeading(self, cog, heading):
+        diff = cog - heading
+        if diff < 0 and diff > -180 or diff > 180:
+            return True
+        else:
+            return False
+
+    #Given -degrees or degress > 360, return the equalinet value between 0 and 360
+    def absDegrees(self, origDeg):
+        if origDeg < 0:
+            return 360 + (origDeg % -360)
+        else:
+            return (origDeg % 360)
+
+    #Uses a metric set to compute current angle and speed
+    #Requires that each of COG, SOG, SOW, and Heading be set, otherwise the current metrics 
+    #are not computed and the method does nothing
+    def computeWaterCurrentMetrics(self, metrics):
+        #Do nothing if we don't have all the metrics we need in this set.
+        if metrics.SOWMetric.N == 0 or metrics.HeadingMetric.N == 0 or metrics.SOGMetric.N == 0 or metrics.COGMetric.N == 0:
+            return
+        else:
+            sow = metrics.SOWMetric.Avg
+            heading =metrics.HeadingMetric.Avg
+            sog = metrics.SOGMetric.Avg
+            cog = metrics.COGMetric.Avg
+            cogHeadingDiff =  self.absDegrees(cog - heading)
+            cogHeaddiffRadians = (math.pi / 180) * cogHeadingDiff
+            currentSpeed = math.sqrt(math.pow(sog, 2) + math.pow(sow,2) - (2 * sow * sog * math.cos(cogHeaddiffRadians)))
+            if sow == 0: # If sow is 0, then our current a can be computed with cog and heading data
+                vectorCurrentAngle = cog #TODO, need to figure out current angle relantive to the boat
+            else:
+                vectorCurrentAngle = math.acos((math.pow(currentSpeed,2) + math.pow(sow,2) - math.pow(sog,2)) / (2 * currentSpeed * sow)) * (180 / math.pi)
+            
+            if sow == 0:
+                currentAngle = self.absDegrees(cog - 180)
+            elif self.isSogPortOfHeading(cog, heading):
+                currentAngle =  vectorCurrentAngle
+            else:
+                currentAngle = 360 - vectorCurrentAngle
+            metrics.WaterCurrentAngle.addDataPoint(currentAngle)
+            metrics.WaterCurrentSpeed.addDataPoint(currentSpeed)
+
     #Takes a JSON string as input, parses out interesting boat telemetry
     #Creates metrics for each interesting telemetry
     def processLogLine(self, strLogLine):
@@ -86,11 +134,14 @@ class TimeSeriesBoatTelemetry:
             metrics.WindAngleMetric.addDataPoint(jsonLogLine["fields"]["Wind Angle"])
         if jsonLogLine["pgn"] == self.BOAT_SPEED_SOW_PGN:
             metrics.SOWMetric.addDataPoint(jsonLogLine["fields"]["Speed Water Referenced"])
+            self.computeWaterCurrentMetrics(metrics)
         if jsonLogLine["pgn"] == self.BOAT_HEADING_PGN:
             metrics.HeadingMetric.addDataPoint(jsonLogLine["fields"]["Heading"])
+            self.computeWaterCurrentMetrics(metrics)
         if jsonLogLine["pgn"] == self.BOAT_SPEED_COG_SOG_PGN:
             metrics.SOGMetric.addDataPoint(jsonLogLine["fields"]["SOG"])
             metrics.COGMetric.addDataPoint(jsonLogLine["fields"]["COG"])
+            self.computeWaterCurrentMetrics(metrics)
         if jsonLogLine["pgn"] == self.BOAT_PITCH_ROLL_PGN:
             metrics.PitchMetric.addDataPoint(jsonLogLine["fields"]["Pitch"])
             metrics.RollMetric.addDataPoint(jsonLogLine["fields"]["Roll"])
@@ -113,6 +164,8 @@ class TimeSeriesBoatTelemetry:
         bt.Roll = metrics.RollMetric.Avg
         bt.Latitude = metrics.LatitudeMetric.Avg
         bt.Longitude = metrics.LongitudeMetric.Avg
+        bt.WaterCurrentAngle = metrics.WaterCurrentAngle.Avg
+        bt.WaterCurrentSpeed = metrics.WaterCurrentSpeed.Avg
         return bt
 
     def getCurrentSecond(self):

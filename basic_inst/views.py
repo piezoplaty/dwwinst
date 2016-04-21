@@ -9,8 +9,7 @@ import threading
 import socket
 import time
 
-#N2KD_URL = 'http://127.0.0.1:2597/''
-SAMPLE_JSON_FILE = '/Users/nated/projects/dwwinst/json_n2k'
+
 
 #simple prototype to read from string lines from a TCP socket
 tsBoatTelem = TimeSeriesBoatTelemetry()
@@ -50,10 +49,12 @@ t = threading.Thread(target=transferJsonStreamToTelemetry)
 t.setDaemon(True)
 t.start()
 
-
-with open(SAMPLE_JSON_FILE, 'rU') as n2kFile:
-    for line in n2kFile:
-        tsBoatTelem.processLogLine(line)
+#Directly load an n2k file
+#N2KD_URL = 'http://127.0.0.1:2597/''
+#SAMPLE_JSON_FILE = '/Users/nated/projects/dwwinst/json_n2k'
+#with open(SAMPLE_JSON_FILE, 'rU') as n2kFile:
+#    for line in n2kFile:
+#        tsBoatTelem.processLogLine(line)
 
 
 def index(request):
@@ -99,7 +100,8 @@ def dataAll(request):
     jsonMetrics.append({"keyName" : "COG", "displayName" : "COG", "value" : metrics.COGMetric.Avg, "targetValue" : None})
     jsonMetrics.append({"keyName" : "Windspeed", "displayName" : "Wind Speed", "value" : metrics.WindSpeedMetric.Avg, "targetValue" : None})
     jsonMetrics.append({"keyName" : "Windangle", "displayName" : "Wind Angle", "value" : metrics.WindAngleMetric.Avg, "targetValue" : None})
-    
+    jsonMetrics.append({"keyName" : "WaterCurrentAngle", "displayName" : "Water Current Angle", "value" : metrics.WaterCurrentAngle.Avg, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "WaterCurrentSpeed", "displayName" : "Water Current Speed", "value" : metrics.WaterCurrentSpeed.Avg, "targetValue" : None})
     #jsonMetrics.append({"keyName" : "Roll", "displayName" : "Roll", "value" : metrics.RollMetric.Avg, "targetValue" : None})
     #jsonMetrics.append({"keyName" : "Pitch", "displayName" : "Pitch", "value" : metrics.PitchMetric.Avg, "targetValue" : None})
     #jsonMetrics.append({"keyName" : "LatLong", "displayName" : "Lat Long", "value" : str(metrics.LatitudeMetric.Avg) + ", \n" + str(metrics.LongitudeMetric.Avg), "targetValue" : None})

@@ -126,7 +126,7 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
                 tsBoatTelem.processLogLine(line)
 
         bt = tsBoatTelem.metricsReadAll()
-        self.assertEqual(39, len(bt))
+        self.assertEqual(37, len(bt))
 
     def test_metricReadLine(self):
         tsBoatTelem = TimeSeriesBoatTelemetry()
@@ -143,6 +143,53 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
         self.assertEqual(1.85, tsBoatTelem.metricsReadLast().WindSpeed)
         self.assertEqual(1.85, tsBoatTelem.metricsReadLast().WindSpeed)
 
+
+    def test_derriveCurrentDataPortCurrent(self):
+        logLineCogSog = '{"timestamp":"2016-02-08T03:49:57.904Z","prio":2,"src":37,"dst":255,"pgn":129026,"description":"COG & SOG, Rapid Update","fields":{"SID":142,"COG Reference":"True","COG":255,"SOG":4.76}}'
+        logLineSow = '{"timestamp":"2016-02-08T03:49:57.983Z","prio":2,"src":36,"dst":255,"pgn":128259,"description":"Speed","fields":{"SID":209,"Speed Water Referenced":6.5}}'
+        logLineHeading = '{"timestamp":"2016-02-08T03:49:57.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":195,"Deviation":0.0,"Reference":"Magnetic"}}'
+        nextSecondData = '{"timestamp":"2016-02-08T03:49:58.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":195,"Deviation":0.0,"Reference":"Magnetic"}}'
+
+        tsBoatTelem = TimeSeriesBoatTelemetry()
+        tsBoatTelem.processLogLine(logLineCogSog)
+        tsBoatTelem.processLogLine(logLineSow)
+        tsBoatTelem.processLogLine(logLineHeading)
+        tsBoatTelem.processLogLine(nextSecondData)
+        self.assertEqual(314.98, tsBoatTelem.metricsReadLast().WaterCurrentAngle)
+        self.assertEqual(5.83, tsBoatTelem.metricsReadLast().WaterCurrentSpeed)
+
+    def test_derriveCurrentDataStarboardCurrent(self):
+        logLineCogSog = '{"timestamp":"2016-02-08T03:49:57.904Z","prio":2,"src":37,"dst":255,"pgn":129026,"description":"COG & SOG, Rapid Update","fields":{"SID":142,"COG Reference":"True","COG":315,"SOG":4.76}}'
+        logLineSow = '{"timestamp":"2016-02-08T03:49:57.983Z","prio":2,"src":36,"dst":255,"pgn":128259,"description":"Speed","fields":{"SID":209,"Speed Water Referenced":6.5}}'
+        logLineHeading = '{"timestamp":"2016-02-08T03:49:57.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":15,"Deviation":0.0,"Reference":"Magnetic"}}'
+        nextSecondData = '{"timestamp":"2016-02-08T03:49:58.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":16,"Deviation":0.0,"Reference":"Magnetic"}}'
+
+        tsBoatTelem = TimeSeriesBoatTelemetry()
+        tsBoatTelem.processLogLine(logLineCogSog)
+        tsBoatTelem.processLogLine(logLineSow)
+        tsBoatTelem.processLogLine(logLineHeading)
+        tsBoatTelem.processLogLine(nextSecondData)
+        self.assertEqual(45.02, tsBoatTelem.metricsReadLast().WaterCurrentAngle)
+        self.assertEqual(5.83, tsBoatTelem.metricsReadLast().WaterCurrentSpeed)
+
+    def test_derriveCurrentDataZeroSow(self):
+        logLineCogSog = '{"timestamp":"2016-02-08T03:49:57.904Z","prio":2,"src":37,"dst":255,"pgn":129026,"description":"COG & SOG, Rapid Update","fields":{"SID":142,"COG Reference":"True","COG":60,"SOG":4.76}}'
+        logLineSow = '{"timestamp":"2016-02-08T03:49:57.983Z","prio":2,"src":36,"dst":255,"pgn":128259,"description":"Speed","fields":{"SID":209,"Speed Water Referenced":0}}'
+        logLineHeading = '{"timestamp":"2016-02-08T03:49:57.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":0,"Deviation":0.0,"Reference":"Magnetic"}}'
+        nextSecondData = '{"timestamp":"2016-02-08T03:49:58.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":1,"Deviation":0.0,"Reference":"Magnetic"}}'
+
+        tsBoatTelem = TimeSeriesBoatTelemetry()
+        tsBoatTelem.processLogLine(logLineCogSog)
+        tsBoatTelem.processLogLine(logLineSow)
+        tsBoatTelem.processLogLine(logLineHeading)
+        tsBoatTelem.processLogLine(nextSecondData)
+        self.assertEqual(240, tsBoatTelem.metricsReadLast().WaterCurrentAngle)
+        self.assertEqual(4.76, tsBoatTelem.metricsReadLast().WaterCurrentSpeed)
+
+
+
+
+#Add a test case where SOW is 0.0, but there is some current
 
 if __name__ == '__main__':
     unittest.main()
