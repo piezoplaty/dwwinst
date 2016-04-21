@@ -23,7 +23,7 @@ while True:
     print json.dumps(currentLine)
     sys.stdout.flush()
     counter += 1
-    time.sleep(.100)
+    time.sleep(.025)
 
 
 
