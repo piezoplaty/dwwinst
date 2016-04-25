@@ -47,6 +47,14 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
         }
     }
 
+    function getMetricByKeyName(keyName, metrics) {
+        for(var i=0; i<metrics.length; i++){
+            if (metrics[i].keyName == keyName){
+                return metrics[i];
+            }
+        }
+    }
+
     function refreshInstrument(){
         var selectedMetric = getSelectedMetric();
         if (selectedMetric.value == null)
@@ -99,6 +107,9 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
         _currentMetricData = metricData; //metricData;
         refreshInstrument();
         populateMenu();
+        if(window.console && window.console.log){
+            window.console.log("Processed MetricData with start time of: " + getMetricByKeyName("MetricTime", metricData).value)
+        }
     };
 
 
