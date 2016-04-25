@@ -49,11 +49,23 @@ class TimeSeriesBoatTelemetry:
     WIND_SPEED_PGN = 130306
     BOAT_PITCH_ROLL_PGN = 127257
     BOAT_LAT_LONG_PGN = 129029
+    MAGNETIC_VARIATION = 127258
+    
+
+    #Scaling Factors - some PGNs values need a scaling factor to line up with the units we want.
+    #Stole the factors from here: https://github.com/canboat/canboat/issues/7
+    BOAT_SPEED_SOW_FACTOR = 2.1
+    BOAT_SPEED_SOG_FACTOR = 1.944
+    WIND_SPEED_FACTOR = 1.944
+
 
     def __init__(self):
         self.TSMetrics = dict()
         self.mostRecentLogTime = None
         self.metricsPosition = None
+        #Grabs the latest GPS=source decliation value from the wire and stores it
+        #The value doesn't change very often, so we don't need a metric for it.
+        self.magneticVariation = 0.0
     
     def roundDownToSecond(self, inputDateTime):
         return datetime.datetime(inputDateTime.year, inputDateTime.month, inputDateTime.day, inputDateTime.hour, inputDateTime.minute, inputDateTime.second, 0)
@@ -130,16 +142,18 @@ class TimeSeriesBoatTelemetry:
         metrics = self.getMetricEntry(logLineTime)
         
         if jsonLogLine["pgn"] == self.WIND_SPEED_PGN:
-            metrics.WindSpeedMetric.addDataPoint(jsonLogLine["fields"]["Wind Speed"])
+            metrics.WindSpeedMetric.addDataPoint(float(jsonLogLine["fields"]["Wind Speed"]) * self.WIND_SPEED_FACTOR)
             metrics.WindAngleMetric.addDataPoint(jsonLogLine["fields"]["Wind Angle"])
         if jsonLogLine["pgn"] == self.BOAT_SPEED_SOW_PGN:
-            metrics.SOWMetric.addDataPoint(jsonLogLine["fields"]["Speed Water Referenced"])
+            metrics.SOWMetric.addDataPoint(float(jsonLogLine["fields"]["Speed Water Referenced"]) * self.BOAT_SPEED_SOW_FACTOR)
             self.computeWaterCurrentMetrics(metrics)
         if jsonLogLine["pgn"] == self.BOAT_HEADING_PGN:
-            metrics.HeadingMetric.addDataPoint(jsonLogLine["fields"]["Heading"])
+            trueNorthHeading = float(jsonLogLine["fields"]["Heading"]) + self.magneticVariation
+            trueNorthHeading = self.absDegrees(trueNorthHeading)
+            metrics.HeadingMetric.addDataPoint(trueNorthHeading)
             self.computeWaterCurrentMetrics(metrics)
         if jsonLogLine["pgn"] == self.BOAT_SPEED_COG_SOG_PGN:
-            metrics.SOGMetric.addDataPoint(jsonLogLine["fields"]["SOG"])
+            metrics.SOGMetric.addDataPoint(float(jsonLogLine["fields"]["SOG"]) * self.BOAT_SPEED_SOG_FACTOR)
             metrics.COGMetric.addDataPoint(jsonLogLine["fields"]["COG"])
             self.computeWaterCurrentMetrics(metrics)
         if jsonLogLine["pgn"] == self.BOAT_PITCH_ROLL_PGN:
@@ -148,7 +162,8 @@ class TimeSeriesBoatTelemetry:
         if jsonLogLine["pgn"] == self.BOAT_LAT_LONG_PGN:
             metrics.LatitudeMetric.addDataPoint(jsonLogLine["fields"]["Latitude"])
             metrics.LongitudeMetric.addDataPoint(jsonLogLine["fields"]["Longitude"])
-
+        if jsonLogLine["pgn"] == self.MAGNETIC_VARIATION:
+            self.magneticVariation = float(jsonLogLine["fields"]["Variation"])
 
 
     def convertMetricsToSimpleTelemetry(self, metrics):
