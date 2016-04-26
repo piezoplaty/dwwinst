@@ -18,11 +18,12 @@ while True:
     if counter == len(originalJson):
         counter = 0
     currentLine = originalJson[counter]
+    counter += 1
     currentLineTimestamp = dateutil.parser.parse(currentLine["timestamp"])
-    currentLine["timestamp"] = datetime.datetime.now().replace(second=currentLineTimestamp.second).isoformat()
+    currentLine["timestamp"] = datetime.datetime.now().isoformat()
     print json.dumps(currentLine)
     sys.stdout.flush()
-    counter += 1
+
     time.sleep(.025)
 
 
