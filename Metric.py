@@ -23,7 +23,7 @@ class Metric:
     def Avg(self):
         if self.N == 0:
             return None
-        return round(self.Sum / self.N, 2)
+        return self.Sum / self.N
 
     @property
     def Max(self):
