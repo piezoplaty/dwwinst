@@ -54,7 +54,9 @@ class TimeSeriesBoatTelemetry:
 
     #Scaling Factors - some PGNs values need a scaling factor to line up with the units we want.
     #Stole the factors from here: https://github.com/canboat/canboat/issues/7
-    BOAT_SPEED_SOW_FACTOR = 2.1
+    #1.944 converts meters per second to kts. The SOW number must be adjusted specific to the boat install
+    #So calibrate the SOW to match COG in times of slack current.
+    BOAT_SPEED_SOW_FACTOR = 1.97
     BOAT_SPEED_SOG_FACTOR = 1.944
     WIND_SPEED_FACTOR = 1.944
 
