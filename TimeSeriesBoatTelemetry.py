@@ -226,15 +226,14 @@ class TimeSeriesBoatTelemetry:
         
         return self.convertMetricsToSimpleTelemetry(self.TSMetrics[keylist[self.metricsPosition]])
 
-    #returns BoatTelemetry from -1 second of the mostRecentLog time. 
-    #The -1 metrics should be complete because all transducers should have 
-    #emitted a log line. Where as the most recent metric will be
-    #incomplete, as some n2k transducers only emit metrics every second. 
+    #returns BoatTelemetry second to last in time sorted metrics
+    #the most current metric is likley incomplete. Note this doesn't 
+    #guard against random time metrics
     def metricsReadLast(self):
-        lastLogTime = self.roundDownToSecond(self.mostRecentLogTime - datetime.timedelta(seconds=1))
-        #TODO
-        #if self.TSMetrics.exists(lastLogTime):
-        return self.convertMetricsToSimpleTelemetry(self.TSMetrics[lastLogTime])
+        keylist = sorted(self.TSMetrics.keys())
+        secondToLast = len(keylist) - 2
+    
+        return self.convertMetricsToSimpleTelemetry(self.TSMetrics[keylist[secondToLast]])
 
     def metricsGetLastMetrics(self):
         lastLogTime = self.roundDownToSecond(self.mostRecentLogTime - datetime.timedelta(seconds=1))

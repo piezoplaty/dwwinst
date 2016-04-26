@@ -196,7 +196,6 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
         logLineHeading = '{"timestamp":"2016-02-08T03:49:57.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":60,"Deviation":0.0,"Reference":"Magnetic"}}'
         nextSecondData = '{"timestamp":"2016-02-08T03:49:58.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":60,"Deviation":0.0,"Reference":"Magnetic"}}'
 
-        tsBoatTelem = TimeSeriesBoatTelemetry()
         tsBoatTelem.processLogLine(logLineCogSog)
         tsBoatTelem.processLogLine(logLineSow)
         tsBoatTelem.processLogLine(logLineHeading)
@@ -204,8 +203,18 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
         self.assertEqual(0, tsBoatTelem.metricsReadLast().WaterCurrentAngle)
         self.assertEqual(0, tsBoatTelem.metricsReadLast().WaterCurrentSpeed)
 
-#Add a test for out of order metrics (57, 58, 59, 04, etc)
-#Add a test case where SOW is 0.0, but there is some current
+    def test_OutOfOrderNMEAMessages(self):
+
+        secondOne = '{"timestamp":"2016-02-08T03:49:50.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":1,"Deviation":0.0,"Reference":"Magnetic"}}'
+        secondTwo = '{"timestamp":"2016-02-08T03:49:51.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":2,"Deviation":0.0,"Reference":"Magnetic"}}'
+        secondThree = '{"timestamp":"2016-02-08T03:49:52.903Z","prio":2,"src":35,"dst":255,"pgn":127250,"description":"Vessel Heading","fields":{"SID":192,"Heading":3,"Deviation":0.0,"Reference":"Magnetic"}}'
+
+        tsBoatTelem = TimeSeriesBoatTelemetry()
+        tsBoatTelem.processLogLine(secondOne)
+        tsBoatTelem.processLogLine(secondThree)
+        self.assertEqual(1, tsBoatTelem.metricsReadLast().Heading)
+        tsBoatTelem.processLogLine(secondTwo)
+        self.assertEqual(2, tsBoatTelem.metricsReadLast().Heading)     
 
 if __name__ == '__main__':
     unittest.main()
