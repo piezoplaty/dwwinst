@@ -24,7 +24,7 @@ function instrumentController(instNameDiv, instReadoutDiv, targetReadoutDiv, men
 
 
     var myThis = this; // preserve context within object methods.
-    var INST_DECIMAL_PRECISION = 1;
+    var INST_DECIMAL_PRECISION = 2;
     var _instReadoutDiv = instReadoutDiv;
     var _instNameDiv = instNameDiv;
     var _menuDiv = menuDiv;
