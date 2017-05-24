@@ -1,0 +1,15 @@
+5-24-2017:Fix this error:
+
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 810, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.7/threading.py", line 763, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/home/pi/Projects/dwwinst/basic_inst/views.py", line 43, in transferJsonStreamToTelemetry
+    tsBoatTelem.processLogLine(logLine)
+  File "/home/pi/Projects/dwwinst/TimeSeriesBoatTelemetry.py", line 153, in processLogLine
+    self.computeWaterCurrentMetrics(metrics)
+  File "/home/pi/Projects/dwwinst/TimeSeriesBoatTelemetry.py", line 120, in computeWaterCurrentMetrics
+    vectorCurrentAngle = math.acos((math.pow(currentSpeed,2) + math.pow(sow,2) - math.pow(sog,2)) / (2 * currentSpeed * sow)) * (180 / math.pi)
+ValueError: math domain error
