@@ -69,6 +69,10 @@ def view_controllers(request):
     template = loader.get_template('basic_inst/view-controllers.js')
     return HttpResponse(template.render())
 
+def view_jquery(request):
+    template = loader.get_template('basic_inst/jquery.min.js')
+    return HttpResponse(template.render())
+
 def dataWind(request):
     metrics = tsBoatTelem.metricsReadLast()
     windSpeed = metrics.WindSpeed
