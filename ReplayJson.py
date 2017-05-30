@@ -7,7 +7,7 @@ import sys
 
 originalJson = list()
 
-SAMPLE_JSON_FILE = '/Users/nated/projects/dwwinst/2016-04-21T02-BoatTelemTest'
+SAMPLE_JSON_FILE = './2016-04-21T02-BoatTelemTest'
 with open(SAMPLE_JSON_FILE, 'rU') as n2kFile:
     for line in n2kFile:
         originalJson.append(json.loads(line)) 
