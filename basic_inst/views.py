@@ -14,40 +14,54 @@ import time
 #simple prototype to read from string lines from a TCP socket
 tsBoatTelem = TimeSeriesBoatTelemetry()
 
-def transferJsonStreamToTelemetry():
-    #Listening Port of CANBOAT n2kd stream
-    N2KD_STREAM_PORT = 2598
+def readFromSocket(socket, _tsBoatTelem):
     #Buffer recv size
     BUFFER_RECV = 2048
     #Polling interval
     POLLING_INTERVAL = .100
-
-    #create an INET, STREAMing socket
-    s = socket.socket(
-        socket.AF_INET, socket.SOCK_STREAM)
-    #now connect to the web server on port 80
-    # - the normal http port
-    s.connect(("localhost", N2KD_STREAM_PORT))
-
     stringBuffer = ''
+    
     while True:
         time.sleep(POLLING_INTERVAL)
-        recvBuffer = s.recv(BUFFER_RECV)
+        recvBuffer = socket.recv(BUFFER_RECV)
 
         stringBuffer += str(recvBuffer)
-        #This seems a bit ditry, how do I know that I'm not going to truncate a n2k message and get a partial line
+        #This seems a bit dirty, how do I know that I'm not going to truncate a n2k message and get a partial line
         stringLines = stringBuffer.split('\n')
 
         for logLine in stringLines:
             if logLine.endswith("}}"): 
                 tsBoatTelem.processLogLine(logLine)
             else:
-                stringBuffer = logLine
+                stringBuffer = logLine   
+
+def transferJsonStreamToTelemetry(n2kdPort):
+    #create an INET, STREAMing socket
+    s = socket.socket(
+        socket.AF_INET, socket.SOCK_STREAM)
+
+    s.connect(("localhost", n2kdPort))
+    readFromSocket(s, tsBoatTelem)
+
+def transferMainMetricTelemetry():
+    #Listening Port of CANBOAT n2kd stream
+    N2KD_STREAM_PORT = 2598
+    transferJsonStreamToTelemetry(N2KD_STREAM_PORT)
+
+def transferBeanLoadCellMetricTelemetry():
+    #BeanLoadCell reader port
+    N2KD_BEAN_STREAM = 2596
+    transferJsonStreamToTelemetry(N2KD_BEAN_STREAM)
 
 
-t = threading.Thread(target=transferJsonStreamToTelemetry)
-t.setDaemon(True)
-t.start()
+
+mainMetricThread = threading.Thread(target=transferMainMetricTelemetry)
+mainMetricThread.setDaemon(True)
+mainMetricThread.start()
+
+loadCellMetricThread = threading.Thread(target=transferBeanLoadCellMetricTelemetry)
+loadCellMetricThread.setDaemon(True)
+loadCellMetricThread.start()
 
 #Directly load an n2k file
 #N2KD_URL = 'http://127.0.0.1:2597/''
