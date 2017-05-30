@@ -2,7 +2,7 @@ import unittest
 import datetime
 from TimeSeriesBoatTelemetry import TimeSeriesBoatTelemetry, BoatTelemetryMetric
 
-SAMPLE_JSON_FILE = '/Users/nated/projects/dwwinst/json_n2k'
+SAMPLE_JSON_FILE = './json_n2k'
 
 class TestTimeSeriesBoatTelemetry(unittest.TestCase):
     MPS_TO_KTS_FACTOR = 1.944
@@ -95,6 +95,12 @@ class TestTimeSeriesBoatTelemetry(unittest.TestCase):
         tsBoatTelem = TimeSeriesBoatTelemetry()
         tsBoatTelem.processLogLine(self.BOAT_COG_SOG_53_SEC)
         self.assertEqual(6.47 * self.MPS_TO_KTS_FACTOR, tsBoatTelem.getCurrentSecond().SOG)
+
+    def test_getLoadCell(self):
+        LOAD_CELL_DATA = '{"src": 99, "description": "Load Cell", "prio": 3, "pgn": 999001, "timestamp": "117-4-2T10:45:32", "dst": 255, "fields": {"LoadCell": "1"}}'
+        tsBoatTelem = TimeSeriesBoatTelemetry()
+        tsBoatTelem.processLogLine(LOAD_CELL_DATA)
+        self.assertEqual(1, tsBoatTelem.getCurrentSecond().LoadCell)
 
     def test_getCOG(self):
         tsBoatTelem = TimeSeriesBoatTelemetry()

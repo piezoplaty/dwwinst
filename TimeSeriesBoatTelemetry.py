@@ -20,8 +20,9 @@ class BoatTelemetry:
         self.Longitude = None
         self.WaterCurrentSpeed = None
         self.WaterCurrentAngle = None
+        self.LoadCell = None
     def __str__(self):
-        return self.Time.isoformat() + ", " + str(self.SOW) + ", " + str(self.Heading) + ", " + str(self.SOG) + ", " + str(self.COG) + ", " + str(self.WaterCurrentAngle) + ", " + str(self.WaterCurrentSpeed) + str(self.WindSpeed) + ", " + str(self.WindAngle) + ", " + str(self.Pitch) + ", " + str(self.Roll) + ", " + str(self.Latitude) + ", " + str(self.Longitude)
+        return self.Time.isoformat() + ", " + str(self.SOW) + ", " + str(self.Heading) + ", " + str(self.SOG) + ", " + str(self.COG) + ", " + str(self.WaterCurrentAngle) + ", " + str(self.WaterCurrentSpeed) + str(self.WindSpeed) + ", " + str(self.WindAngle) + ", " + str(self.Pitch) + ", " + str(self.Roll) + ", " + str(self.Latitude) + ", " + str(self.Longitude) + ", " + str(self.LoadCell)
     def __repr__(self):
         return self.__str__()
 
@@ -41,6 +42,7 @@ class BoatTelemetryMetric:
         self.LongitudeMetric = Metric("Longitude")
         self.WaterCurrentSpeed = Metric("Water Current Speed")
         self.WaterCurrentAngle = Metric("Water Current Angle")
+        self.LoadCellMetric = Metric("Load Cell")
 
 class TimeSeriesBoatTelemetry:
     BOAT_SPEED_SOW_PGN = 128259
@@ -50,6 +52,7 @@ class TimeSeriesBoatTelemetry:
     BOAT_PITCH_ROLL_PGN = 127257
     BOAT_LAT_LONG_PGN = 129029
     MAGNETIC_VARIATION = 127258
+    LOAD_CELL_PGN = 999001
     
 
     #Scaling Factors - some PGNs values need a scaling factor to line up with the units we want.
@@ -168,6 +171,8 @@ class TimeSeriesBoatTelemetry:
             metrics.LongitudeMetric.addDataPoint(jsonLogLine["fields"]["Longitude"])
         if jsonLogLine["pgn"] == self.MAGNETIC_VARIATION:
             self.magneticVariation = float(jsonLogLine["fields"]["Variation"])
+        if jsonLogLine["pgn"] == self.LOAD_CELL_PGN:
+            metrics.LoadCellMetric.addDataPoint(jsonLogLine["fields"]["LoadCell"])
 
 
     def convertMetricsToSimpleTelemetry(self, metrics):
@@ -185,6 +190,7 @@ class TimeSeriesBoatTelemetry:
         bt.Longitude = metrics.LongitudeMetric.Avg
         bt.WaterCurrentAngle = metrics.WaterCurrentAngle.Avg
         bt.WaterCurrentSpeed = metrics.WaterCurrentSpeed.Avg
+        bt.LoadCell = metrics.LoadCellMetric.Avg
         return bt
 
     def getCurrentSecond(self):

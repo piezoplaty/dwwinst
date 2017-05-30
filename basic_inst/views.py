@@ -121,6 +121,7 @@ def dataAll(request):
     jsonMetrics.append({"keyName" : "WaterCurrentAngle", "displayName" : "Water Current Angle", "value" : metrics.WaterCurrentAngle.Avg, "targetValue" : None})
     jsonMetrics.append({"keyName" : "WaterCurrentSpeed", "displayName" : "Water Current Speed", "value" : metrics.WaterCurrentSpeed.Avg, "targetValue" : None})
     jsonMetrics.append({"keyName" : "MetricTime", "displayName" : "Metric Time", "value" : metrics.StartTime, "targetValue" : None})
+    jsonMetrics.append({"keyName" : "LoadCell", "displayName" : "Load Cell", "value" : metrics.LoadCellMetric.Avg, "targetValue" : None})
     #jsonMetrics.append({"keyName" : "Roll", "displayName" : "Roll", "value" : metrics.RollMetric.Avg, "targetValue" : None})
     #jsonMetrics.append({"keyName" : "Pitch", "displayName" : "Pitch", "value" : metrics.PitchMetric.Avg, "targetValue" : None})
     #jsonMetrics.append({"keyName" : "LatLong", "displayName" : "Lat Long", "value" : str(metrics.LatitudeMetric.Avg) + ", \n" + str(metrics.LongitudeMetric.Avg), "targetValue" : None})
