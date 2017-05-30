@@ -2,9 +2,9 @@
 import socket
 import time
 
-def transferJsonStreamToTelemetry(telemetryLogger):
+def transferJsonStreamToTelemetry(telemetryLogger, listeningPort):
     #Listening Port of CANBOAT n2kd stream
-    N2KD_STREAM_PORT = 2598
+    N2KD_STREAM_PORT = listeningPort
     #Buffer recv size
     BUFFER_RECV = 2048
 
@@ -19,7 +19,7 @@ def transferJsonStreamToTelemetry(telemetryLogger):
         time.sleep(.100)
         recvBuffer = s.recv(2048)
         stringBuffer = str(recvBuffer)
-        #This seems a bit ditry, how do I know that I'm not going to truncate a n2k message and get a partial line
+        #This seems a bit dirty, how do I know that I'm not going to truncate a n2k message and get a partial line
         stringBuffer = stringBuffer.split('\n')
 
         for logLine in stringBuffer:
