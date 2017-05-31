@@ -246,6 +246,8 @@ class TimeSeriesBoatTelemetry:
         return self.convertMetricsToSimpleTelemetry(self.TSMetrics[keylist[secondToLast]])
 
     def metricsGetLastMetrics(self):
+        if self.mostRecentLogTime is None:
+            return
         lastLogTime = self.roundDownToSecond(self.mostRecentLogTime - datetime.timedelta(seconds=1))
         return self.TSMetrics[lastLogTime]
 

@@ -44,24 +44,51 @@ def transferJsonStreamToTelemetry(n2kdPort):
     readFromSocket(s, tsBoatTelem)
 
 def transferMainMetricTelemetry():
-    #Listening Port of CANBOAT n2kd stream
-    N2KD_STREAM_PORT = 2598
-    transferJsonStreamToTelemetry(N2KD_STREAM_PORT)
+    try:
+        #Listening Port of CANBOAT n2kd stream
+        N2KD_STREAM_PORT = 2598
+        transferJsonStreamToTelemetry(N2KD_STREAM_PORT)
+    except:
+        print("Encountered an error trying to get main metric telemetry.")
 
 def transferBeanLoadCellMetricTelemetry():
-    #BeanLoadCell reader port
-    N2KD_BEAN_STREAM = 2596
-    transferJsonStreamToTelemetry(N2KD_BEAN_STREAM)
+    try:
+        #BeanLoadCell reader port
+        N2KD_BEAN_STREAM = 2596
+        transferJsonStreamToTelemetry(N2KD_BEAN_STREAM)
+    except:
+        print("Encountered an error trying to get bean load cell telemetry.")       
 
 
 
-mainMetricThread = threading.Thread(target=transferMainMetricTelemetry)
-mainMetricThread.setDaemon(True)
-mainMetricThread.start()
+def threadNanny():
+    POLLING_INTERVAL = 5
 
-loadCellMetricThread = threading.Thread(target=transferBeanLoadCellMetricTelemetry)
-loadCellMetricThread.setDaemon(True)
-loadCellMetricThread.start()
+    mainMetricThread = threading.Thread(target=transferMainMetricTelemetry)
+    mainMetricThread.setDaemon(True)
+    mainMetricThread.start()
+
+    loadCellMetricThread = threading.Thread(target=transferBeanLoadCellMetricTelemetry)
+    loadCellMetricThread.setDaemon(True)
+    loadCellMetricThread.start()
+
+    while True:
+        time.sleep(POLLING_INTERVAL)
+        if not mainMetricThread.isAlive():
+            mainMetricThread = threading.Thread(target=transferMainMetricTelemetry)
+            mainMetricThread.setDaemon(True)
+            mainMetricThread.start()
+        if not loadCellMetricThread.isAlive():
+            loadCellMetricThread = threading.Thread(target=transferBeanLoadCellMetricTelemetry)
+            loadCellMetricThread.setDaemon(True)
+            loadCellMetricThread.start()
+
+
+threadNannyThread = threading.Thread(target=threadNanny)
+threadNannyThread.setDaemon(True)
+threadNannyThread.start()
+
+
 
 #Directly load an n2k file
 #N2KD_URL = 'http://127.0.0.1:2597/''
@@ -111,7 +138,8 @@ def dataBoat(request):
 def dataAll(request):
     metrics = tsBoatTelem.metricsGetLastMetrics()
     jsonMetrics = []
-
+    if metrics is None:
+        return JsonResponse(jsonMetrics, safe=False)
     jsonMetrics.append({"keyName" : "SOW", "displayName" : "SOW", "value" : metrics.SOWMetric.Avg, "targetValue" : None})
     jsonMetrics.append({"keyName" : "SOG", "displayName" : "SOG", "value" : metrics.SOGMetric.Avg, "targetValue" : None})
     jsonMetrics.append({"keyName" : "Heading", "displayName" : "Heading", "value" : metrics.HeadingMetric.Avg, "targetValue" : None})
