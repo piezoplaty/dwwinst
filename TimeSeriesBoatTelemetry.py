@@ -106,32 +106,36 @@ class TimeSeriesBoatTelemetry:
     #Requires that each of COG, SOG, SOW, and Heading be set, otherwise the current metrics 
     #are not computed and the method does nothing
     def computeWaterCurrentMetrics(self, metrics):
-        #Do nothing if we don't have all the metrics we need in this set.
-        if metrics.SOWMetric.N == 0 or metrics.HeadingMetric.N == 0 or metrics.SOGMetric.N == 0 or metrics.COGMetric.N == 0:
+        try:
+            #Do nothing if we don't have all the metrics we need in this set.
+            if metrics.SOWMetric.N == 0 or metrics.HeadingMetric.N == 0 or metrics.SOGMetric.N == 0 or metrics.COGMetric.N == 0:
+                return
+            else:
+                sow = metrics.SOWMetric.Avg
+                heading =metrics.HeadingMetric.Avg
+                sog = metrics.SOGMetric.Avg
+                cog = metrics.COGMetric.Avg
+                cogHeadingDiff =  self.absDegrees(cog - heading)
+                cogHeaddiffRadians = (math.pi / 180) * cogHeadingDiff
+                currentSpeed = math.sqrt(math.pow(sog, 2) + math.pow(sow,2) - (2 * sow * sog * math.cos(cogHeaddiffRadians)))
+                if sow == 0 or currentSpeed == 0: # If sow is 0, then our current a can be computed with cog and heading data
+                    vectorCurrentAngle = cog #TODO, need to figure out current angle relantive to the boat
+                else:
+                    vectorCurrentAngle = math.acos((math.pow(currentSpeed,2) + math.pow(sow,2) - math.pow(sog,2)) / (2 * currentSpeed * sow)) * (180 / math.pi)
+                
+                if sow == 0:
+                    currentAngle = self.absDegrees(cog - 180)
+                elif currentSpeed == 0:
+                    currentAngle = 0
+                elif self.isSogPortOfHeading(cog, heading):
+                    currentAngle =  vectorCurrentAngle
+                else:
+                    currentAngle = 360 - vectorCurrentAngle
+                metrics.WaterCurrentAngle.addDataPoint(currentAngle)
+                metrics.WaterCurrentSpeed.addDataPoint(currentSpeed)
+        except:
+            print("Encountered an exception while computing current angles and speed.")
             return
-        else:
-            sow = metrics.SOWMetric.Avg
-            heading =metrics.HeadingMetric.Avg
-            sog = metrics.SOGMetric.Avg
-            cog = metrics.COGMetric.Avg
-            cogHeadingDiff =  self.absDegrees(cog - heading)
-            cogHeaddiffRadians = (math.pi / 180) * cogHeadingDiff
-            currentSpeed = math.sqrt(math.pow(sog, 2) + math.pow(sow,2) - (2 * sow * sog * math.cos(cogHeaddiffRadians)))
-            if sow == 0 or currentSpeed == 0: # If sow is 0, then our current a can be computed with cog and heading data
-                vectorCurrentAngle = cog #TODO, need to figure out current angle relantive to the boat
-            else:
-                vectorCurrentAngle = math.acos((math.pow(currentSpeed,2) + math.pow(sow,2) - math.pow(sog,2)) / (2 * currentSpeed * sow)) * (180 / math.pi)
-            
-            if sow == 0:
-                currentAngle = self.absDegrees(cog - 180)
-            elif currentSpeed == 0:
-                currentAngle = 0
-            elif self.isSogPortOfHeading(cog, heading):
-                currentAngle =  vectorCurrentAngle
-            else:
-                currentAngle = 360 - vectorCurrentAngle
-            metrics.WaterCurrentAngle.addDataPoint(currentAngle)
-            metrics.WaterCurrentSpeed.addDataPoint(currentSpeed)
 
     #Takes a JSON string as input, parses out interesting boat telemetry
     #Creates metrics for each interesting telemetry
