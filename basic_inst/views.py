@@ -8,6 +8,7 @@ import ReadSocket
 import threading
 import socket
 import time
+import sys
 
 
 
@@ -49,7 +50,8 @@ def transferMainMetricTelemetry():
         N2KD_STREAM_PORT = 2598
         transferJsonStreamToTelemetry(N2KD_STREAM_PORT)
     except:
-        print("Encountered an error trying to get main metric telemetry.")
+        e = sys.exc_info()[0]
+        print("Encountered an error trying to get main metric telemetry." + str(e))
 
 def transferBeanLoadCellMetricTelemetry():
     try:
@@ -57,7 +59,8 @@ def transferBeanLoadCellMetricTelemetry():
         N2KD_BEAN_STREAM = 2596
         transferJsonStreamToTelemetry(N2KD_BEAN_STREAM)
     except:
-        print("Encountered an error trying to get bean load cell telemetry.")       
+        e = sys.exc_info()[0]
+        print("Encountered an error trying to get bean load cell telemetry." + str(e))       
 
 
 
