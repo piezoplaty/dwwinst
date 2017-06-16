@@ -1,4 +1,4 @@
-5-24-2017:Fix this error:
+5-24-2017:Fix this error: -- DONE, added a swallowing try/except to catch any math errors that slip through.
 
 SOW 4.04
 Wind Speed 4.98
@@ -19,14 +19,14 @@ Traceback (most recent call last):
 ValueError: math domain error
 
 
-5-24-2017: Add embedded jquery into the build
+5-24-2017: Add embedded jquery into the build -- DONE
 
 
 
 5-30: Add connection rety logic for the n2kd threads
 
 
-5-30: When client disconnects from BeanLoadCell server, an unhandled exception occurs
+5-30: When client disconnects from BeanLoadCell server, an unhandled exception occurs -- Done, added a 'end' event handler
 
 2017-05-30T17:32:58.612Z INFO Char read success(a495ff21c5b14b44b5121370f02d74de): 
 Scratch bank 1 value for load cell 99 : 1
@@ -49,5 +49,4 @@ Error: This socket has been ended by the other party
     at Noble.onRead (/Users/nathandye/Projects/bean-sdk-node/node_modules/noble/lib/noble.js:275:20)
 Nathans-MBP:examples nathandye$ node readScratch.js 
 
-
-5-30: Bean server can't handle more than one exception
+On disconnect - remove the socket from the list of sockets
